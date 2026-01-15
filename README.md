@@ -70,7 +70,7 @@ lib/
    flutter run
    ```
 
-## 📱 Screenshots
+## 📱 Output Video
 
 ![output](output/output.mp4)
 

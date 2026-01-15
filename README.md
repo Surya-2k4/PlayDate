@@ -73,17 +73,17 @@ lib/
 ## 📸 Screenshots
 
 
-| 💬 Splash Screen | 🎶 Sign Up |
+| 📜 Splash Screen | 🔐 Sign Up |
 |---------------|---------------|
-| ![Splash Screen](output/splash.jpeg) | ![SignUp Screen](output/signup.png) |
+| <img src="output/splash.jpeg" width="250"> | <img src="output/signup.png" width="250"> |
 
 | 🔐 Login Screen | 🏠 Home Screen |
 |----------------|---------------|
-| ![Login Screen](output/login.jpeg) | ![Home Screen](output/home.jpeg) |
+| <img src="output/signin.png" width="250"> | <img src="output/home.jpeg" width="250"> |
 
 | 💬 Chat Screen | 🎶 Inside Room |
 |---------------|---------------|
-| ![Chat Screen](output/chat.jpeg) | ![Inside Room](output/inside%20room.jpeg) |
+| <img src="output/chat.jpeg" width="250"> | <img src="output/inside%20room.jpeg" width="250"> |
 
 
 

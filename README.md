@@ -72,6 +72,11 @@ lib/
 
 ## 📸 Screenshots
 
+
+| 💬 Chat Screen | 🎶 Sign Up |
+|---------------|---------------|
+| ![Splash Screen](output/splash.jpeg) | ![SignUp Screen](output/signup.jpeg) |
+
 | 🔐 Login Screen | 🏠 Home Screen |
 |----------------|---------------|
 | ![Login Screen](output/login.jpeg) | ![Home Screen](output/home.jpeg) |
@@ -79,6 +84,8 @@ lib/
 | 💬 Chat Screen | 🎶 Inside Room |
 |---------------|---------------|
 | ![Chat Screen](output/chat.jpeg) | ![Inside Room](output/inside%20room.jpeg) |
+
+
 
 ## 🤝 Contributing
 

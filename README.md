@@ -70,9 +70,15 @@ lib/
    flutter run
    ```
 
-🎬 **Demo Video**
+## 📸 Screenshots
 
-👉 [Click here to watch the demo](assets/output.mp4)
+| 🔐 Login Screen | 🏠 Home Screen |
+|----------------|---------------|
+| ![Login Screen](output/login.jpeg) | ![Home Screen](output/home.jpeg) |
+
+| 💬 Chat Screen | 🎶 Inside Room |
+|---------------|---------------|
+| ![Chat Screen](output/chat.jpeg) | ![Inside Room](output/inside%20room.jpeg) |
 
 ## 🤝 Contributing
 

@@ -72,17 +72,11 @@ lib/
 
 ## 📱 Screenshots
 
-| Splash Screen | Login | Home | Room |
-| :---: | :---: | :---: | :---: |
-| ![Splash](assets/loveicon.png) | ![Login](https://via.placeholder.com/200x400?text=Login+Screen) | ![Home](https://via.placeholder.com/200x400?text=Home+Screen) | ![Room](https://via.placeholder.com/200x400?text=Room+Screen) |
+![output](output/output.mp4)
 
 ## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
 ---
-Made with ❤️ by [Your Name/Handle]
+Made with ❤️ by Surya

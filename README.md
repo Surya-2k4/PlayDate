@@ -73,9 +73,9 @@ lib/
 ## 📸 Screenshots
 
 
-| 💬 Chat Screen | 🎶 Sign Up |
+| 💬 Splash Screen | 🎶 Sign Up |
 |---------------|---------------|
-| ![Splash Screen](output/splash.jpeg) | ![SignUp Screen](output/signup.jpeg) |
+| ![Splash Screen](output/splash.jpeg) | ![SignUp Screen](output/signup.png) |
 
 | 🔐 Login Screen | 🏠 Home Screen |
 |----------------|---------------|

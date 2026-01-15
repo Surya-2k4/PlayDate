@@ -70,9 +70,9 @@ lib/
    flutter run
    ```
 
-## 📱 Output Video
+🎬 **Demo Video**
 
-![output](output/output.mp4)
+👉 [Click here to watch the demo](assets/output.mp4)
 
 ## 🤝 Contributing
 

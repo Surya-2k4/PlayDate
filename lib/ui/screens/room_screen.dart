@@ -10,6 +10,8 @@ import '../../core/constants/utils/theme/app_theme.dart';
 import 'search_screen.dart';
 import 'chat_screen.dart';
 
+import 'package:playdate/logic/theme_provider.dart';
+
 class RoomScreen extends StatefulWidget {
   const RoomScreen({super.key});
 
@@ -27,6 +29,7 @@ class _RoomScreenState extends State<RoomScreen> {
     Future.microtask(() {
       final roomProv = context.read<RoomProvider>();
       final playerProv = context.read<PlayerProvider>();
+      final theme = Theme.of(context);
 
       roomProv.listenRoom(
         playerProv,
@@ -43,9 +46,9 @@ class _RoomScreenState extends State<RoomScreen> {
         onJoinerLeft: () {
           if (mounted && roomProv.isHost) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text("Your partner has left the room."),
-                backgroundColor: AppTheme.primaryPink,
+              SnackBar(
+                content: const Text("Your partner has left the room."),
+                backgroundColor: theme.primaryColor,
               ),
             );
           }
@@ -56,6 +59,7 @@ class _RoomScreenState extends State<RoomScreen> {
 
   Future<bool> _onWillPop() async {
     final roomProv = context.read<RoomProvider>();
+    final theme = Theme.of(context);
     if (!roomProv.isHost) {
       await roomProv.leaveRoom();
       return true;
@@ -76,7 +80,7 @@ class _RoomScreenState extends State<RoomScreen> {
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.primaryPink,
+              backgroundColor: theme.primaryColor,
             ),
             onPressed: () => Navigator.pop(context, true),
             child: const Text("Leave", style: TextStyle(color: Colors.white)),
@@ -96,15 +100,16 @@ class _RoomScreenState extends State<RoomScreen> {
     final player = context.watch<PlayerProvider>();
     final room = context.watch<RoomProvider>();
     final chat = context.watch<ChatProvider>();
+    final themeProvider = context.watch<ThemeProvider>();
+    final theme = Theme.of(context);
+    final isLove = themeProvider.isLoveTheme;
 
     return PopScope(
       canPop: false,
       onPopInvoked: (didPop) async {
         if (didPop) return;
         final shouldPop = await _onWillPop();
-        if (shouldPop && mounted) {
-          Navigator.of(context).pop();
-        }
+        if (shouldPop && mounted) Navigator.of(context).pop();
       },
       child: Scaffold(
         backgroundColor: Colors.white,
@@ -114,15 +119,83 @@ class _RoomScreenState extends State<RoomScreen> {
                 backgroundColor: Colors.transparent,
                 elevation: 0,
                 title: Text(
-                  "Our Love Room",
+                  isLove ? "Our Love Room" : "Our Play Room",
                   style: GoogleFonts.pacifico(
-                    color: AppTheme.primaryPink,
+                    color: theme.primaryColor,
                     fontSize: 22,
                   ),
                 ),
                 centerTitle: true,
-                iconTheme: const IconThemeData(color: AppTheme.primaryPink),
+                iconTheme: IconThemeData(color: theme.primaryColor),
                 actions: [
+                  Center(
+                    child: GestureDetector(
+                      onTap: () => themeProvider.toggleTheme(),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 400),
+                        width: 75,
+                        height: 36,
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: theme.primaryColor.withOpacity(0.1),
+                          border: Border.all(
+                            color: theme.primaryColor.withOpacity(0.2),
+                            width: 1.5,
+                          ),
+                        ),
+                        child: Stack(
+                          children: [
+                            AnimatedAlign(
+                              duration: const Duration(milliseconds: 400),
+                              alignment: isLove
+                                  ? Alignment.centerRight
+                                  : Alignment.centerLeft,
+                              curve: Curves.elasticOut,
+                              child: Container(
+                                width: 28,
+                                height: 28,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: theme.primaryColor,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: theme.primaryColor.withOpacity(
+                                        0.4,
+                                      ),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                child: Icon(
+                                  isLove ? Icons.favorite : Icons.people,
+                                  size: 16,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                            Align(
+                              alignment: isLove
+                                  ? Alignment.centerLeft
+                                  : Alignment.centerRight,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 4,
+                                ),
+                                child: Icon(
+                                  isLove ? Icons.people : Icons.favorite,
+                                  size: 14,
+                                  color: theme.primaryColor.withOpacity(0.3),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
                   IconButton(
                     icon: const Icon(Icons.logout_rounded),
                     onPressed: () => _onWillPop().then((value) {
@@ -132,16 +205,15 @@ class _RoomScreenState extends State<RoomScreen> {
                 ],
               ),
         body: Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [AppTheme.lightPink, Colors.white],
+              colors: [theme.primaryColor.withOpacity(0.1), Colors.white],
             ),
           ),
           child: Column(
             children: [
-              /// PERSISTENT PLAYER (Top Half)
               AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
                 margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -152,7 +224,7 @@ class _RoomScreenState extends State<RoomScreen> {
                   borderRadius: BorderRadius.circular(25),
                   boxShadow: [
                     BoxShadow(
-                      color: AppTheme.primaryPink.withOpacity(0.2),
+                      color: theme.primaryColor.withOpacity(0.2),
                       blurRadius: 15,
                       spreadRadius: 2,
                     ),
@@ -164,16 +236,16 @@ class _RoomScreenState extends State<RoomScreen> {
                         key: ValueKey(player.currentVideoId),
                         controller: player.controller!,
                         showVideoProgressIndicator: true,
-                        progressIndicatorColor: AppTheme.primaryPink,
+                        progressIndicatorColor: theme.primaryColor,
                         bottomActions: [
                           const SizedBox(width: 14.0),
                           CurrentPosition(),
                           const SizedBox(width: 8.0),
                           ProgressBar(
                             isExpanded: true,
-                            colors: const ProgressBarColors(
-                              playedColor: AppTheme.primaryPink,
-                              handleColor: AppTheme.primaryPink,
+                            colors: ProgressBarColors(
+                              playedColor: theme.primaryColor,
+                              handleColor: theme.primaryColor,
                             ),
                           ),
                           const SizedBox(width: 8.0),
@@ -189,17 +261,21 @@ class _RoomScreenState extends State<RoomScreen> {
                               duration: const Duration(seconds: 2),
                               builder: (context, double value, child) {
                                 return Icon(
-                                  Icons.favorite,
+                                  isLove
+                                      ? Icons.favorite
+                                      : Icons.sentiment_very_satisfied,
                                   size: 60 + (value * 20),
-                                  color: AppTheme.primaryPink.withOpacity(0.6),
+                                  color: theme.primaryColor.withOpacity(0.6),
                                 );
                               },
                             ),
                             const SizedBox(height: 16),
                             Text(
-                              "Waiting for a romantic tune...",
+                              isLove
+                                  ? "Waiting for a romantic tune..."
+                                  : "Let's pick something to watch!",
                               style: TextStyle(
-                                color: AppTheme.primaryPink.withOpacity(0.8),
+                                color: theme.primaryColor.withOpacity(0.8),
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
                                 fontStyle: FontStyle.italic,
@@ -209,34 +285,30 @@ class _RoomScreenState extends State<RoomScreen> {
                         ),
                       ),
               ),
-
-              /// CONTENT (Bottom Half)
               Expanded(
                 child: PageView(
                   controller: _pageController,
                   onPageChanged: (index) {
                     setState(() => _currentIndex = index);
-                    if (index == 1) {
-                      context.read<ChatProvider>().setChatVisible(true);
-                    } else {
-                      context.read<ChatProvider>().setChatVisible(false);
-                    }
+                    context.read<ChatProvider>().setChatVisible(index == 1);
                   },
                   children: [
-                    /// SONG LIST / CONTROLS
                     Container(
                       padding: const EdgeInsets.all(24),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          // Background hearts effect logic (inline or stack)
-                          const Icon(
+                          Icon(
                             Icons.auto_awesome,
-                            color: Colors.orangeAccent,
+                            color: isLove
+                                ? Colors.orangeAccent
+                                : theme.primaryColor,
                           ),
                           const SizedBox(height: 10),
                           Text(
-                            "Together with you",
+                            isLove
+                                ? "Together with you"
+                                : "Hanging out with friends",
                             style: GoogleFonts.poppins(
                               color: AppTheme.textGrey,
                               fontWeight: FontWeight.w600,
@@ -246,10 +318,10 @@ class _RoomScreenState extends State<RoomScreen> {
                           const SizedBox(height: 8),
                           Text(
                             player.controller != null
-                                ? "🎶 Watching our favorite song"
-                                : "Let's find a song to share!",
-                            style: const TextStyle(
-                              color: AppTheme.primaryPink,
+                                ? "🎶 Watching together"
+                                : "Find something to watch!",
+                            style: TextStyle(
+                              color: theme.primaryColor,
                               letterSpacing: 0.5,
                               fontWeight: FontWeight.w500,
                             ),
@@ -272,9 +344,7 @@ class _RoomScreenState extends State<RoomScreen> {
                                 color: Colors.white,
                                 boxShadow: [
                                   BoxShadow(
-                                    color: AppTheme.primaryPink.withOpacity(
-                                      0.25,
-                                    ),
+                                    color: theme.primaryColor.withOpacity(0.25),
                                     blurRadius: 30,
                                     spreadRadius: 5,
                                   ),
@@ -286,21 +356,25 @@ class _RoomScreenState extends State<RoomScreen> {
                                   width: 140,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    gradient: AppTheme.primaryGradient,
+                                    color: theme.primaryColor,
                                   ),
-                                  child: const Column(
+                                  child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Icon(
-                                        Icons.favorite,
+                                        isLove
+                                            ? Icons.favorite
+                                            : Icons.movie_outlined,
                                         size: 40,
                                         color: Colors.white,
                                       ),
-                                      SizedBox(height: 10),
+                                      const SizedBox(height: 10),
                                       Text(
-                                        "Add Love\nMusic",
+                                        isLove
+                                            ? "Add Love\nMusic"
+                                            : "Add Fun\nVideo",
                                         textAlign: TextAlign.center,
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                           color: Colors.white,
                                           fontWeight: FontWeight.bold,
                                           fontSize: 16,
@@ -323,8 +397,6 @@ class _RoomScreenState extends State<RoomScreen> {
                         ],
                       ),
                     ),
-
-                    /// CHAT
                     const ChatScreen(),
                   ],
                 ),
@@ -337,7 +409,7 @@ class _RoomScreenState extends State<RoomScreen> {
             : BottomNavigationBar(
                 currentIndex: _currentIndex,
                 backgroundColor: AppTheme.pureWhite,
-                selectedItemColor: AppTheme.primaryPink,
+                selectedItemColor: theme.primaryColor,
                 unselectedItemColor: AppTheme.textGrey,
                 onTap: (index) {
                   _pageController.animateToPage(
@@ -348,8 +420,8 @@ class _RoomScreenState extends State<RoomScreen> {
                 },
                 items: [
                   const BottomNavigationBarItem(
-                    icon: Icon(Icons.music_note),
-                    label: "Music",
+                    icon: Icon(Icons.movie_outlined),
+                    label: "Content",
                   ),
                   BottomNavigationBarItem(
                     icon: Stack(

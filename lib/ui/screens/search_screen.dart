@@ -46,6 +46,8 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Container(
       height: MediaQuery.of(context).size.height * 0.85,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -86,7 +88,7 @@ class _SearchScreenState extends State<SearchScreen> {
             decoration: InputDecoration(
               hintText: "Search song name...",
               hintStyle: const TextStyle(color: AppTheme.textGrey),
-              prefixIcon: const Icon(Icons.search, color: AppTheme.primaryPink),
+              prefixIcon: Icon(Icons.search, color: theme.primaryColor),
               filled: true,
               fillColor: AppTheme.softGrey,
               border: OutlineInputBorder(
@@ -95,10 +97,10 @@ class _SearchScreenState extends State<SearchScreen> {
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(30),
-                borderSide: BorderSide(color: Colors.transparent),
+                borderSide: const BorderSide(color: Colors.transparent),
               ),
               suffixIcon: IconButton(
-                icon: const Icon(Icons.send, color: AppTheme.primaryPink),
+                icon: Icon(Icons.send, color: theme.primaryColor),
                 onPressed: _search,
               ),
             ),
@@ -106,10 +108,10 @@ class _SearchScreenState extends State<SearchScreen> {
           ),
           const SizedBox(height: 20),
           _isLoading
-              ? const Expanded(
+              ? Expanded(
                   child: Center(
                     child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation(AppTheme.primaryPink),
+                      valueColor: AlwaysStoppedAnimation(theme.primaryColor),
                     ),
                   ),
                 )

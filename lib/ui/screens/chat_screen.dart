@@ -9,6 +9,8 @@ import '../../core/constants/utils/theme/app_theme.dart';
 import 'package:intl/intl.dart';
 import '../../widgets/chat_bubble.dart';
 
+import 'package:playdate/logic/theme_provider.dart';
+
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
 
@@ -22,22 +24,35 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   final List<Widget> _hearts = [];
   int _lastProcessedTimestamp = 0;
   late AnimationController _bgController;
+  bool _isTyping = false;
 
   @override
   void initState() {
     super.initState();
     _bgController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 10),
-    )..repeat(reverse: true);
+      duration: const Duration(seconds: 15),
+    )..repeat();
+
+    _messageController.addListener(_onTextChanged);
   }
 
   @override
   void dispose() {
+    _messageController.removeListener(_onTextChanged);
     _messageController.dispose();
     _scrollController.dispose();
     _bgController.dispose();
     super.dispose();
+  }
+
+  void _onTextChanged() {
+    final isTyping = _messageController.text.isNotEmpty;
+    if (_isTyping != isTyping) {
+      _isTyping = isTyping;
+      final userName = context.read<AuthProvider>().userName ?? "Anonymous";
+      context.read<ChatProvider>().setTyping(userName, isTyping);
+    }
   }
 
   void _sendMessage() {
@@ -48,11 +63,22 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
 
     context.read<ChatProvider>().sendMessage(
       sender: userName,
-      senderId: userName, // Using name as ID for simplicity
+      senderId: userName,
       text: text,
     );
 
     _messageController.clear();
+    _scrollToBottom();
+  }
+
+  void _sendSticker(String emoji) {
+    final userName = context.read<AuthProvider>().userName ?? "Anonymous";
+    context.read<ChatProvider>().sendMessage(
+      sender: userName,
+      senderId: userName,
+      text: emoji,
+      type: 'sticker',
+    );
     _scrollToBottom();
   }
 
@@ -67,8 +93,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     setState(() {
       _hearts.add(const HeartBurst());
     });
-    // Remove after animation completes
-    Future.delayed(const Duration(seconds: 3), () {
+    Future.delayed(const Duration(seconds: 4), () {
       if (mounted && _hearts.isNotEmpty) {
         setState(() {
           _hearts.removeAt(0);
@@ -88,7 +113,281 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     }
   }
 
+  void _showStickerPicker() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.5,
+        minChildSize: 0.3,
+        maxChildSize: 0.8,
+        builder: (_, controller) => Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+          ),
+          child: DefaultTabController(
+            length: 6,
+            child: Column(
+              children: [
+                Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.symmetric(vertical: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                TabBar(
+                  isScrollable: true,
+                  labelColor: Theme.of(context).primaryColor,
+                  unselectedLabelColor: Colors.grey,
+                  indicatorColor: Theme.of(context).primaryColor,
+                  tabs: const [
+                    Tab(text: "Recent"),
+                    Tab(text: "Funny"),
+                    Tab(text: "Animals"),
+                    Tab(text: "Food"),
+                    Tab(text: "Love"),
+                    Tab(text: "Fun"),
+                  ],
+                ),
+                Expanded(
+                  child: TabBarView(
+                    children: [
+                      _buildStickerGrid(controller, [
+                        '🎉',
+                        '😂',
+                        '🤣',
+                        '🥺',
+                        '😍',
+                        '✨',
+                        '🔥',
+                        '💖',
+                        '🚀',
+                        '�',
+                        '⭐',
+                        '🌈',
+                        '🍭',
+                        '🧸',
+                        '👻',
+                        '💀',
+                      ]),
+                      _buildStickerGrid(controller, [
+                        '🤡',
+                        '💩',
+                        '🤪',
+                        '👺',
+                        '👻',
+                        '💀',
+                        '👽',
+                        '�',
+                        '�',
+                        '🤮',
+                        '🤧',
+                        '🤯',
+                        '🤠',
+                        '🥳',
+                        '🥴',
+                        '�',
+                        '�',
+                        '🤤',
+                        '🥵',
+                        '🥶',
+                        '🧐',
+                        '🤓',
+                        '👾',
+                        '🤮',
+                        '🧟',
+                        '🧞',
+                        '🧛',
+                        '🧙',
+                        '🧜',
+                        '🧝',
+                        '�',
+                        '🐲',
+                        '🙈',
+                        '🙉',
+                        '🙊',
+                        '🐵',
+                        '🦍',
+                        '�',
+                        '🐕',
+                        '🐩',
+                      ]),
+                      _buildStickerGrid(controller, [
+                        '🐶',
+                        '🐱',
+                        '🐭',
+                        '🐹',
+                        '🐰',
+                        '🦊',
+                        '🐻',
+                        '🐼',
+                        '🐨',
+                        '🐯',
+                        '🦁',
+                        '🐮',
+                        '🐷',
+                        '🐸',
+                        '🐵',
+                        '🐔',
+                        '🐧',
+                        '🐦',
+                        '🐤',
+                        '�',
+                        '�',
+                        '🦉',
+                        '�',
+                        '🐺',
+                        '🐗',
+                        '🐴',
+                        '🦄',
+                        '🐝',
+                        '🐛',
+                        '🦋',
+                        '🐌',
+                        '🐞',
+                      ]),
+                      _buildStickerGrid(controller, [
+                        '🍎',
+                        '🍐',
+                        '🍊',
+                        '🍋',
+                        '🍌',
+                        '🍉',
+                        '🍇',
+                        '🍓',
+                        '🍈',
+                        '🍒',
+                        '🍑',
+                        '🥭',
+                        '🍍',
+                        '🥥',
+                        '🥝',
+                        '🍅',
+                        '🍆',
+                        '🥑',
+                        '🥦',
+                        '🥬',
+                        '🌽',
+                        '🥕',
+                        '🥔',
+                        '🍠',
+                        '🥐',
+                        '🥯',
+                        '🍞',
+                        '🥖',
+                        '🥨',
+                        '🧀',
+                        '�',
+                        '🍳',
+                      ]),
+                      _buildStickerGrid(controller, [
+                        '❤️',
+                        '🧡',
+                        '💛',
+                        '💚',
+                        '💙',
+                        '💜',
+                        '�',
+                        '🤍',
+                        '🤎',
+                        '�',
+                        '❣️',
+                        '💕',
+                        '💞',
+                        '💓',
+                        '💗',
+                        '💖',
+                        '💘',
+                        '💝',
+                        '💟',
+                        '💌',
+                        '💍',
+                        '💎',
+                        '💐',
+                        '🌹',
+                        '🥀',
+                        '🌺',
+                        '🌷',
+                        '🌸',
+                        '🌼',
+                        '🌻',
+                        '🌞',
+                        '🌝',
+                      ]),
+                      _buildStickerGrid(controller, [
+                        '⚽',
+                        '🏀',
+                        '🏈',
+                        '⚾',
+                        '🥎',
+                        '🎾',
+                        '🏐',
+                        '🏉',
+                        '🎱',
+                        '🏓',
+                        '🏸',
+                        '🏒',
+                        '🏑',
+                        '🥍',
+                        '🏏',
+                        '🥅',
+                        '⛳',
+                        '🏹',
+                        '🎣',
+                        '🥊',
+                        '🥋',
+                        '🎽',
+                        '🛹',
+                        '🛷',
+                        '⛸',
+                        '🥌',
+                        '🎿',
+                        '⛷',
+                        '🏂',
+                        '🏋️',
+                        '🤼',
+                        '🤽',
+                      ]),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStickerGrid(ScrollController controller, List<String> emojis) {
+    return GridView.builder(
+      controller: controller,
+      padding: const EdgeInsets.all(16),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 4,
+        mainAxisSpacing: 10,
+        crossAxisSpacing: 10,
+      ),
+      itemCount: emojis.length,
+      itemBuilder: (context, index) => GestureDetector(
+        onTap: () {
+          _sendSticker(emojis[index]);
+          Navigator.pop(context);
+        },
+        child: Center(
+          child: Text(emojis[index], style: const TextStyle(fontSize: 32)),
+        ),
+      ),
+    );
+  }
+
   Widget _buildQuickReaction(String emoji) {
+    final theme = Theme.of(context);
     return GestureDetector(
       onTap: () {
         final userName = context.read<AuthProvider>().userName ?? "Anonymous";
@@ -105,10 +404,10 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: AppTheme.lightPink),
+          border: Border.all(color: theme.primaryColor.withOpacity(0.2)),
           boxShadow: [
             BoxShadow(
-              color: AppTheme.primaryPink.withOpacity(0.05),
+              color: theme.primaryColor.withOpacity(0.05),
               blurRadius: 5,
             ),
           ],
@@ -121,84 +420,86 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final chatProvider = context.watch<ChatProvider>();
+    final themeProvider = context.watch<ThemeProvider>();
     final currentUserName = context.watch<AuthProvider>().userName;
+    final theme = Theme.of(context);
+    final isLove = themeProvider.isLoveTheme;
 
-    return Stack(
-      children: [
-        // Attractive Background
-        AnimatedBuilder(
-          animation: _bgController,
-          builder: (context, child) {
-            return Container(
-              height: double.infinity,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Color.lerp(
-                      AppTheme.lightPink.withOpacity(0.4),
-                      AppTheme.lightPink.withOpacity(0.6),
-                      _bgController.value,
-                    )!,
-                    Colors.white,
-                    Color.lerp(
-                      AppTheme.lightPink.withOpacity(0.2),
-                      AppTheme.lightPink.withOpacity(0.4),
-                      _bgController.value,
-                    )!,
-                  ],
-                ),
-              ),
-            );
-          },
-        ),
+    // Filter typing users (excluding me)
+    final typingText = chatProvider.typingUsers.entries
+        .where((e) => e.key != currentUserName && e.value)
+        .map((e) => e.key)
+        .join(", ");
 
-        // Faint Decorative Background Icons
-        AnimatedBuilder(
-          animation: _bgController,
-          builder: (context, child) {
-            return Stack(
-              children: [
-                Positioned(
-                  top: 100 + (_bgController.value * 30),
-                  right: -30 - (_bgController.value * 20),
-                  child: Icon(
-                    Icons.favorite,
-                    size: 200,
-                    color: AppTheme.primaryPink.withOpacity(0.04),
+    return Scaffold(
+      extendBodyBehindAppBar: true,
+      body: Stack(
+        children: [
+          // Background - Mesh Gradient Style
+          AnimatedBuilder(
+            animation: _bgController,
+            builder: (context, child) {
+              final activeColor = theme.primaryColor;
+              return Container(
+                height: double.infinity,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      activeColor.withOpacity(0.2),
+                      Colors.white,
+                      activeColor.withOpacity(0.1),
+                    ],
+                    transform: GradientRotation(
+                      _bgController.value * 2 * math.pi,
+                    ),
                   ),
                 ),
-                Positioned(
-                  bottom: 150 - (_bgController.value * 40),
-                  left: -50 + (_bgController.value * 20),
-                  child: Icon(
-                    Icons.favorite,
-                    size: 250,
-                    color: AppTheme.primaryPink.withOpacity(0.04),
-                  ),
-                ),
-                Positioned(
-                  top: 300 - (_bgController.value * 50),
-                  left: 150 + (_bgController.value * 40),
-                  child: Icon(
-                    Icons.favorite,
-                    size: 100,
-                    color: AppTheme.primaryPink.withOpacity(0.03),
-                  ),
-                ),
-              ],
-            );
-          },
-        ),
+              );
+            },
+          ),
 
-        Column(
-          children: [
-            // Chat Messages
-            Expanded(
-              child: Container(
-                decoration: const BoxDecoration(color: Colors.transparent),
+          // Decorative Icons
+          AnimatedBuilder(
+            animation: _bgController,
+            builder: (context, child) {
+              final icon = isLove
+                  ? Icons.favorite
+                  : Icons.sentiment_very_satisfied;
+              return Stack(
+                children: [
+                  Positioned(
+                    top:
+                        100 +
+                        (math.sin(_bgController.value * 2 * math.pi) * 20),
+                    right: -30,
+                    child: Icon(
+                      icon,
+                      size: 200,
+                      color: theme.primaryColor.withOpacity(0.04),
+                    ),
+                  ),
+                  Positioned(
+                    bottom:
+                        150 +
+                        (math.cos(_bgController.value * 2 * math.pi) * 20),
+                    left: -50,
+                    child: Icon(
+                      icon,
+                      size: 250,
+                      color: theme.primaryColor.withOpacity(0.04),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+
+          Column(
+            children: [
+              Expanded(
                 child: StreamBuilder<DatabaseEvent>(
                   stream: chatProvider.messageStream,
                   builder: (context, snapshot) {
@@ -215,14 +516,13 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                             Icon(
                               Icons.message_outlined,
                               size: 60,
-                              color: AppTheme.primaryPink.withOpacity(0.3),
+                              color: theme.primaryColor.withOpacity(0.3),
                             ),
                             const SizedBox(height: 16),
                             Text(
-                              "Share your feelings...",
+                              "Start a conversation...",
                               style: GoogleFonts.poppins(
                                 color: AppTheme.textGrey.withOpacity(0.5),
-                                fontStyle: FontStyle.italic,
                               ),
                             ),
                           ],
@@ -240,46 +540,45 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                         return bTime.compareTo(aTime);
                       });
 
-                    // Trigger animation for new reaction messages from partner
                     if (messages.isNotEmpty) {
                       final latest = Map<String, dynamic>.from(
                         messages.first.value,
                       );
                       final timestamp = (latest['timestamp'] ?? 0) as int;
-
                       if (latest['type'] == 'reaction' &&
                           latest['sender'] != currentUserName &&
                           timestamp > _lastProcessedTimestamp) {
                         _lastProcessedTimestamp = timestamp;
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          _showHeartAnimation();
-                        });
+                        WidgetsBinding.instance.addPostFrameCallback(
+                          (_) => _showHeartAnimation(),
+                        );
                       }
                     }
 
                     return ListView.builder(
                       controller: _scrollController,
                       reverse: true,
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.only(
+                        left: 16,
+                        right: 16,
+                        top: 100,
+                        bottom: 16,
+                      ),
                       itemCount: messages.length,
                       itemBuilder: (context, index) {
+                        final messageKey = messages[index].key as String;
                         final message = Map<String, dynamic>.from(
                           messages[index].value,
                         );
                         final sender = message['sender'] ?? 'Unknown';
                         final text = message['text'] ?? '';
                         final timestamp = message['timestamp'] as int?;
+                        final type = message['type'] as String?;
+                        final reactions =
+                            message['reactions'] as Map<dynamic, dynamic>?;
                         final bool isMe = sender == currentUserName;
-                        final bool isReaction = message['type'] == 'reaction';
-                        String timeStr = "";
-                        if (timestamp != null) {
-                          final date = DateTime.fromMillisecondsSinceEpoch(
-                            timestamp,
-                          );
-                          timeStr = DateFormat('HH:mm').format(date);
-                        }
 
-                        if (isReaction) {
+                        if (type == 'reaction') {
                           return Center(
                             child: Container(
                               margin: const EdgeInsets.symmetric(vertical: 8),
@@ -288,13 +587,13 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                 vertical: 6,
                               ),
                               decoration: BoxDecoration(
-                                color: AppTheme.lightPink.withOpacity(0.5),
+                                color: theme.primaryColor.withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Text(
-                                "$sender sent a ❤️",
-                                style: const TextStyle(
-                                  color: AppTheme.primaryPink,
+                                "$sender sent a ${isLove ? '❤️' : '😊'}",
+                                style: TextStyle(
+                                  color: theme.primaryColor,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 13,
                                 ),
@@ -303,136 +602,166 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                           );
                         }
 
+                        String timeStr = "";
+                        if (timestamp != null) {
+                          timeStr = DateFormat('HH:mm').format(
+                            DateTime.fromMillisecondsSinceEpoch(timestamp),
+                          );
+                        }
+
                         return ChatBubble(
+                          messageId: messageKey,
                           sender: sender,
                           message: text,
                           isMe: isMe,
                           time: timeStr,
+                          type: type,
+                          reactions: reactions,
+                          onReactionSelected: (emoji) {
+                            chatProvider.reactToMessage(
+                              messageKey,
+                              emoji,
+                              currentUserName ?? "Anonymous",
+                            );
+                          },
                         );
                       },
                     );
                   },
                 ),
               ),
-            ),
-            // Message Input
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(25),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppTheme.primaryPink.withOpacity(0.1),
-                    blurRadius: 10,
-                    offset: const Offset(0, -5),
+
+              // Typing Indicator
+              if (typingText.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 4,
                   ),
-                ],
-              ),
-              child: Column(
-                children: [
-                  // Quick Reactions Bar
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        _buildQuickReaction("❤️"),
-                        _buildQuickReaction("😍"),
-                        _buildQuickReaction("😘"),
-                        _buildQuickReaction("🥰"),
-                        _buildQuickReaction("🌹"),
-                        _buildQuickReaction("🍿"),
-                        _buildQuickReaction("🔥"),
-                        _buildQuickReaction("😲"),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
+                  child: Row(
                     children: [
-                      GestureDetector(
-                        onTap: _sendReaction,
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: AppTheme.lightPink,
-                            shape: BoxShape.circle,
-                          ),
-                          child: TweenAnimationBuilder(
-                            tween: Tween<double>(begin: 0.9, end: 1.1),
-                            duration: const Duration(seconds: 1),
-                            builder: (context, double value, child) {
-                              return Transform.scale(
-                                scale: value,
-                                child: const Icon(
-                                  Icons.favorite,
-                                  color: AppTheme.primaryPink,
-                                  size: 32,
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: TextField(
-                          controller: _messageController,
-                          style: const TextStyle(color: AppTheme.textBlack),
-                          decoration: InputDecoration(
-                            hintText: "Type a sweet message...",
-                            hintStyle: const TextStyle(
-                              color: AppTheme.textGrey,
-                            ),
-                            filled: true,
-                            fillColor: AppTheme.softGrey,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(25),
-                              borderSide: BorderSide.none,
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 20,
-                              vertical: 10,
-                            ),
-                          ),
-                          onSubmitted: (_) => _sendMessage(),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      GestureDetector(
-                        onTap: _sendMessage,
-                        child: Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: const BoxDecoration(
-                            color: AppTheme.primaryPink,
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.send,
-                            color: Colors.white,
-                            size: 20,
-                          ),
+                      Text(
+                        "$typingText is typing...",
+                        style: TextStyle(
+                          color: theme.primaryColor.withOpacity(0.7),
+                          fontSize: 12,
+                          fontStyle: FontStyle.italic,
                         ),
                       ),
                     ],
                   ),
-                ],
+                ),
+
+              // Message Input
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(25),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 10,
+                      offset: const Offset(0, -5),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          _buildQuickReaction("❤️"),
+                          _buildQuickReaction("😍"),
+                          _buildQuickReaction("😂"),
+                          _buildQuickReaction("🔥"),
+                          _buildQuickReaction("👍"),
+                          _buildQuickReaction("😲"),
+                          _buildQuickReaction("😢"),
+                          _buildQuickReaction("🌹"),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        IconButton(
+                          icon: Icon(
+                            isLove
+                                ? Icons.favorite
+                                : Icons.sentiment_very_satisfied,
+                            color: theme.primaryColor,
+                          ),
+                          onPressed: _sendReaction,
+                        ),
+                        IconButton(
+                          icon: Icon(
+                            Icons.sticky_note_2_outlined,
+                            color: theme.primaryColor,
+                          ),
+                          onPressed: _showStickerPicker,
+                        ),
+                        Expanded(
+                          child: TextField(
+                            controller: _messageController,
+                            style: const TextStyle(color: AppTheme.textBlack),
+                            decoration: InputDecoration(
+                              hintText: "Type a message...",
+                              hintStyle: const TextStyle(
+                                color: AppTheme.textGrey,
+                              ),
+                              filled: true,
+                              fillColor: AppTheme.softGrey,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(25),
+                                borderSide: BorderSide.none,
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                                vertical: 10,
+                              ),
+                            ),
+                            onSubmitted: (_) => _sendMessage(),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        GestureDetector(
+                          onTap: _sendMessage,
+                          child: Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: theme.primaryColor,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.send,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
-        ),
-        // Overlaid hearts
-        ..._hearts,
-      ],
+            ],
+          ),
+          ..._hearts,
+        ],
+      ),
     );
   }
 }
 
 class HeartBurst extends StatefulWidget {
   const HeartBurst({super.key});
-
   @override
   State<HeartBurst> createState() => _HeartBurstState();
 }
@@ -447,17 +776,12 @@ class _HeartBurstState extends State<HeartBurst>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 4000), // Slower animation
+      duration: const Duration(milliseconds: 4000),
     );
-
     final random = math.Random();
-    // 6 big hearts flying towards Top, Left, and Right
     for (int i = 0; i < 6; i++) {
-      // Restrict direction to Top, Left, and Right (PI to 2*PI)
       double direction = math.pi + (random.nextDouble() * math.pi);
-      // Distance multiplier
       double distance = 400 + random.nextDouble() * 400;
-
       _points.add(
         Point(
           x: math.cos(direction) * distance,
@@ -467,7 +791,6 @@ class _HeartBurstState extends State<HeartBurst>
         ),
       );
     }
-
     _controller.forward();
   }
 
@@ -479,56 +802,46 @@ class _HeartBurstState extends State<HeartBurst>
 
   @override
   Widget build(BuildContext context) {
+    final isLove = context.watch<ThemeProvider>().isLoveTheme;
     final screenSize = MediaQuery.of(context).size;
     final centerX = screenSize.width / 2;
     final centerY = screenSize.height / 2;
 
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, child) {
-        return Stack(
-          children: _points.map((p) {
-            final progress = _controller.value;
+    final emoji = isLove ? "❤️" : "😂";
 
-            // Curved movement using an ease-out curve for the distance
-            final curvedProgress = Curves.easeOutCubic.transform(progress);
+    return RepaintBoundary(
+      child: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, child) {
+          final progress = _controller.value;
+          final curvedProgress = Curves.easeOutCubic.transform(progress);
+          final opacity = (1 - progress).clamp(0.0, 1.0);
+          final scale = 0.5 + (math.sin(progress * math.pi) * 0.8);
+          final rotation = progress * 3;
 
-            final xOffset = p.x * curvedProgress;
-            final yOffset = p.y * curvedProgress;
+          return Stack(
+            children: _points.map((p) {
+              final xOffset = p.x * curvedProgress;
+              final yOffset = p.y * curvedProgress;
 
-            final opacity = (1 - progress).clamp(0.0, 1.0);
-
-            // Pulsing scale that grows and then shrinks slightly at the end
-            final scale = 0.5 + (math.sin(progress * math.pi) * 0.8);
-
-            return Positioned(
-              left: centerX + xOffset - (p.size / 2),
-              top: centerY + yOffset - (p.size / 2),
-              child: Opacity(
-                opacity: opacity,
-                child: Transform.rotate(
-                  angle: p.angle + (progress * 3), // Faster rotation
-                  child: Transform.scale(
-                    scale: scale,
-                    child: Icon(
-                      Icons.favorite,
-                      color: AppTheme.primaryPink.withOpacity(0.85),
-                      size: p.size,
-                      shadows: [
-                        const Shadow(color: Colors.white, blurRadius: 20),
-                        Shadow(
-                          color: AppTheme.primaryPink.withOpacity(0.6),
-                          blurRadius: 40,
-                        ),
-                      ],
+              return Positioned(
+                left: centerX + xOffset - (p.size / 2),
+                top: centerY + yOffset - (p.size / 2),
+                child: Opacity(
+                  opacity: opacity,
+                  child: Transform.rotate(
+                    angle: p.angle + rotation,
+                    child: Transform.scale(
+                      scale: scale,
+                      child: Text(emoji, style: TextStyle(fontSize: p.size)),
                     ),
                   ),
                 ),
-              ),
-            );
-          }).toList(),
-        );
-      },
+              );
+            }).toList(),
+          );
+        },
+      ),
     );
   }
 }

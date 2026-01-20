@@ -5,10 +5,11 @@ import 'firebase_options.dart';
 import 'package:playdate/logic/auth_provider.dart';
 import 'package:playdate/logic/room_provider.dart';
 import 'package:provider/provider.dart';
-import 'core/constants/utils/theme/app_theme.dart';
 import 'logic/player_provider.dart';
 import 'package:playdate/logic/chat_provider.dart';
 import 'ui/screens/splash_screen.dart';
+
+import 'package:playdate/logic/theme_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,6 +30,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => PlayerProvider()),
         ChangeNotifierProvider(create: (_) => RoomProvider()),
         ChangeNotifierProvider(create: (_) => ChatProvider()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
       ],
       child: const PlayDateApp(),
     ),
@@ -40,10 +42,12 @@ class PlayDateApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = context.watch<ThemeProvider>();
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'PlayDate',
-      theme: AppTheme.lightTheme,
+      theme: themeProvider.currentTheme,
       home: const SplashScreen(),
     );
   }

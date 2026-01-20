@@ -7,6 +7,7 @@ import '../../logic/room_provider.dart';
 import '../../logic/player_provider.dart';
 import '../../logic/chat_provider.dart';
 import '../../logic/auth_provider.dart';
+import '../../logic/theme_provider.dart';
 import 'room_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -21,6 +22,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late AnimationController _floatingController;
 
   void _handleLogout() async {
+    final theme = Theme.of(context);
     final result = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -34,10 +36,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
+              backgroundColor: theme.primaryColor,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             ),
             onPressed: () => Navigator.pop(context, true),
-            child: const Text("Logout"),
+            child: const Text("Logout", style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -57,6 +60,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   void _showNameDialog() {
+    final theme = Theme.of(context);
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -81,7 +85,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           Center(
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.primaryPink,
+                backgroundColor: theme.primaryColor,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -158,6 +162,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       return;
     }
 
+    final theme = Theme.of(context);
     final codeController = TextEditingController();
     showDialog(
       context: context,
@@ -192,7 +197,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               Expanded(
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.primaryPink,
+                    backgroundColor: theme.primaryColor,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -227,7 +232,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final userName = context.watch<AuthProvider>().userName ?? "Love";
+    final userName = context.watch<AuthProvider>().userName ?? "Mate";
+    final theme = Theme.of(context);
+    final themeProvider = context.watch<ThemeProvider>();
+    final isLove = themeProvider.isLoveTheme;
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -235,30 +243,97 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
+          Center(
+            child: GestureDetector(
+              onTap: () => themeProvider.toggleTheme(),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 400),
+                width: 75,
+                height: 36,
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color: theme.primaryColor.withOpacity(0.1),
+                  border: Border.all(
+                    color: theme.primaryColor.withOpacity(0.2),
+                    width: 1.5,
+                  ),
+                ),
+                child: Stack(
+                  children: [
+                    AnimatedAlign(
+                      duration: const Duration(milliseconds: 400),
+                      alignment: isLove
+                          ? Alignment.centerRight
+                          : Alignment.centerLeft,
+                      curve: Curves.elasticOut,
+                      child: Container(
+                        width: 28,
+                        height: 28,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: theme.primaryColor,
+                          boxShadow: [
+                            BoxShadow(
+                              color: theme.primaryColor.withOpacity(0.4),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Icon(
+                          isLove ? Icons.favorite : Icons.people,
+                          size: 16,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                    Align(
+                      alignment: isLove
+                          ? Alignment.centerLeft
+                          : Alignment.centerRight,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: Icon(
+                          isLove ? Icons.people : Icons.favorite,
+                          size: 14,
+                          color: theme.primaryColor.withOpacity(0.3),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
           IconButton(
-            icon: const Icon(Icons.logout_rounded, color: AppTheme.primaryPink),
+            icon: Icon(Icons.logout_rounded, color: theme.primaryColor),
             onPressed: _handleLogout,
             tooltip: 'Logout',
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: 4),
         ],
       ),
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [AppTheme.lightPink, Colors.white],
+            colors: [theme.primaryColor.withOpacity(0.1), Colors.white],
           ),
         ),
         child: Stack(
           children: [
-            // Decorative floating background hearts
+            // Decorative floating background icons
             AnimatedBuilder(
               animation: _floatingController,
               builder: (context, child) {
+                final icon = isLove
+                    ? Icons.favorite
+                    : Icons.sentiment_very_satisfied;
                 return Stack(
                   children: [
                     Positioned(
@@ -266,11 +341,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       right: -50 + (_floatingController.value * 40),
                       child: Opacity(
                         opacity: 0.1,
-                        child: Icon(
-                          Icons.favorite,
-                          size: 250,
-                          color: AppTheme.primaryPink,
-                        ),
+                        child: Icon(icon, size: 250, color: theme.primaryColor),
                       ),
                     ),
                     Positioned(
@@ -278,23 +349,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       left: -40 - (_floatingController.value * 10),
                       child: Opacity(
                         opacity: 0.1,
-                        child: Icon(
-                          Icons.favorite,
-                          size: 200,
-                          color: AppTheme.primaryPink,
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      top: 100 - (_floatingController.value * 15),
-                      left: 40 + (_floatingController.value * 5),
-                      child: Opacity(
-                        opacity: 0.05,
-                        child: Icon(
-                          Icons.favorite,
-                          size: 80,
-                          color: AppTheme.primaryPink,
-                        ),
+                        child: Icon(icon, size: 200, color: theme.primaryColor),
                       ),
                     ),
                   ],
@@ -309,38 +364,31 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   child: Column(
                     children: [
                       const SizedBox(height: 40),
-                      // Animated Heart with Glow
-                      _buildMainHeart(),
+                      _buildMainIcon(isLove, theme.primaryColor),
                       const SizedBox(height: 30),
 
-                      // Welcome Text
                       Text(
-                        "Hello, $userName! ❤️",
-                        style: Theme.of(context).textTheme.headlineSmall
-                            ?.copyWith(
-                              color: AppTheme.textBlack,
-                              fontWeight: FontWeight.bold,
-                            ),
+                        "Hello, $userName! ${isLove ? "❤️" : "👋"}",
+                        style: theme.textTheme.headlineSmall?.copyWith(
+                          color: AppTheme.textBlack,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         "PlayDate",
-                        style: Theme.of(context).textTheme.displayLarge
-                            ?.copyWith(
-                              color: AppTheme.primaryPink,
-                              fontFamily:
-                                  'Pacifico', // Use the script font for romance
-                              fontSize: 48,
-                              letterSpacing: 1.2,
-                            ),
+                        style: theme.textTheme.displayLarge?.copyWith(
+                          color: theme.primaryColor,
+                          fontFamily: 'Pacifico',
+                          fontSize: 48,
+                          letterSpacing: 1.2,
+                        ),
                       ),
 
                       const SizedBox(height: 20),
-                      // Romantic Status Card
-                      _buildLoversCard(),
+                      _buildInfoCard(isLove, theme.primaryColor),
 
                       const SizedBox(height: 50),
-                      // Action Buttons with staggered entrance
                       TweenAnimationBuilder(
                         tween: Tween<double>(begin: 0, end: 1),
                         duration: const Duration(milliseconds: 1000),
@@ -352,17 +400,25 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               child: Column(
                                 children: [
                                   _buildHomeButton(
-                                    label: "Create a Love Nest",
-                                    icon: Icons.favorite_border,
+                                    label: isLove
+                                        ? "Create a Love Nest"
+                                        : "Create a Fun Room",
+                                    icon: isLove
+                                        ? Icons.favorite_border
+                                        : Icons.add_circle_outline,
                                     onPressed: _createRoom,
                                     isPrimary: true,
+                                    themeColor: theme.primaryColor,
                                   ),
                                   const SizedBox(height: 20),
                                   _buildHomeButton(
-                                    label: "Join Your Partner",
+                                    label: isLove
+                                        ? "Join Your Partner"
+                                        : "Join Your Friend",
                                     icon: Icons.people_outline,
                                     onPressed: () => _showJoinDialog(),
                                     isPrimary: false,
+                                    themeColor: theme.primaryColor,
                                   ),
                                 ],
                               ),
@@ -372,8 +428,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       ),
 
                       const SizedBox(height: 60),
-                      // Daily Love Quote (Optional but eye-catchy)
-                      _buildQuoteSection(),
+                      _buildQuoteSection(isLove, theme.primaryColor),
                       const SizedBox(height: 40),
                     ],
                   ),
@@ -386,7 +441,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildMainHeart() {
+  Widget _buildMainIcon(bool isLove, Color color) {
     return TweenAnimationBuilder(
       tween: Tween<double>(begin: 0, end: 1),
       duration: const Duration(seconds: 2),
@@ -396,7 +451,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: AppTheme.primaryPink.withOpacity(0.2 * value),
+                color: color.withOpacity(0.2 * value),
                 blurRadius: 30,
                 spreadRadius: 10,
               ),
@@ -404,10 +459,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
           child: Transform.scale(
             scale: 0.9 + (value * 0.1),
-            child: const Icon(
-              Icons.favorite,
+            child: Icon(
+              isLove ? Icons.favorite : Icons.sentiment_very_satisfied,
               size: 140,
-              color: AppTheme.primaryPink,
+              color: color,
             ),
           ),
         );
@@ -415,7 +470,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildLoversCard() {
+  Widget _buildInfoCard(bool isLove, Color color) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
@@ -424,7 +479,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         borderRadius: BorderRadius.circular(30),
         boxShadow: [
           BoxShadow(
-            color: AppTheme.primaryPink.withOpacity(0.1),
+            color: color.withOpacity(0.1),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -435,10 +490,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: AppTheme.lightPink,
+              color: color.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(Icons.auto_awesome, color: AppTheme.primaryPink),
+            child: Icon(Icons.auto_awesome, color: color),
           ),
           const SizedBox(width: 15),
           Expanded(
@@ -446,17 +501,21 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Together is a beautiful place to be",
+                  isLove
+                      ? "Together is a beautiful place to be"
+                      : "Friends make everything better",
                   style: TextStyle(
-                    color: AppTheme.primaryPink,
+                    color: color,
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
                   ),
                 ),
                 Text(
-                  "Start watching together now",
-                  style: TextStyle(
-                    color: const Color.fromARGB(255, 69, 68, 68),
+                  isLove
+                      ? "Start watching together now"
+                      : "Connect and watch movies",
+                  style: const TextStyle(
+                    color: Color.fromARGB(255, 69, 68, 68),
                     fontSize: 13,
                   ),
                 ),
@@ -468,17 +527,19 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildQuoteSection() {
+  Widget _buildQuoteSection(bool isLove, Color color) {
     return Opacity(
       opacity: 0.8,
       child: Column(
         children: [
-          const Icon(Icons.format_quote, color: AppTheme.primaryPink),
+          Icon(Icons.format_quote, color: color),
           const SizedBox(height: 10),
           Text(
-            "\"Love is not about how many days, months, or years you have been together. Love is about how much you love each other every single day.\"",
+            isLove
+                ? "\"Love is not about how many days, months, or years you have been together. Love is about how much you love each other every single day.\""
+                : "\"True friendship comes when the silence between two people is comfortable.\"",
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
               color: AppTheme.textGrey,
               fontStyle: FontStyle.italic,
               fontSize: 14,
@@ -494,6 +555,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     required IconData icon,
     required VoidCallback onPressed,
     required bool isPrimary,
+    required Color themeColor,
   }) {
     return Container(
       width: double.infinity,
@@ -503,7 +565,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         boxShadow: isPrimary
             ? [
                 BoxShadow(
-                  color: AppTheme.primaryPink.withOpacity(0.3),
+                  color: themeColor.withOpacity(0.3),
                   blurRadius: 15,
                   offset: const Offset(0, 8),
                 ),
@@ -512,9 +574,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       ),
       child: ElevatedButton.icon(
         style: ElevatedButton.styleFrom(
-          backgroundColor: isPrimary ? AppTheme.primaryPink : Colors.white,
-          foregroundColor: isPrimary ? Colors.white : AppTheme.primaryPink,
-          side: const BorderSide(color: AppTheme.primaryPink, width: 2),
+          backgroundColor: isPrimary ? themeColor : Colors.white,
+          foregroundColor: isPrimary ? Colors.white : themeColor,
+          side: BorderSide(color: themeColor, width: 2),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),

@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/utils/theme/app_theme.dart';
 import '../../../logic/auth_provider.dart';
+import '../../../logic/theme_provider.dart';
 import 'home_screen.dart';
 import 'signin_screen.dart';
 
@@ -78,11 +79,20 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = context.watch<ThemeProvider>();
+    final isLove = themeProvider.isLoveTheme;
+
     return Scaffold(
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        decoration: const BoxDecoration(gradient: AppTheme.splashGradient),
+        decoration: BoxDecoration(
+          gradient: AppTheme.getSplashGradient(
+            themeProvider.isLoveTheme
+                ? AppTheme.themeLove
+                : AppTheme.themeFriend,
+          ),
+        ),
         child: Center(
           child: AnimatedBuilder(
             animation: _controller,
@@ -105,7 +115,7 @@ class _SplashScreenState extends State<SplashScreen>
                                 Padding(
                                   padding: const EdgeInsets.only(
                                     top: 15,
-                                    right: 10,
+                                    right: 14,
                                   ),
                                   child: Text(
                                     'PlayDate',
@@ -116,7 +126,6 @@ class _SplashScreenState extends State<SplashScreen>
                                     ),
                                   ),
                                 ),
-                                // The line and heart decoration
                                 Positioned(
                                   top: 25,
                                   right: 0,
@@ -125,10 +134,9 @@ class _SplashScreenState extends State<SplashScreen>
                                     children: [
                                       Container(
                                         height: 2,
-                                        width: 80,
+                                        width: 60,
                                         color: Colors.white.withOpacity(0.9),
                                       ),
-                                      // Heart pulse animation
                                       TweenAnimationBuilder(
                                         tween: Tween<double>(
                                           begin: 0.8,
@@ -137,17 +145,19 @@ class _SplashScreenState extends State<SplashScreen>
                                         duration: const Duration(
                                           milliseconds: 1000,
                                         ),
-                                        builder:
-                                            (context, double value, child) {
-                                              return Transform.scale(
-                                                scale: 1.0 + (0.1 * value),
-                                                child: const Icon(
-                                                  Icons.favorite,
-                                                  color: Colors.white,
-                                                  size: 24,
-                                                ),
-                                              );
-                                            },
+                                        builder: (context, double value, child) {
+                                          return Transform.scale(
+                                            scale: 1.0 + (0.1 * value),
+                                            child: Icon(
+                                              isLove
+                                                  ? Icons.favorite
+                                                  : Icons
+                                                        .sentiment_very_satisfied,
+                                              color: Colors.white,
+                                              size: 24,
+                                            ),
+                                          );
+                                        },
                                       ),
                                     ],
                                   ),
@@ -155,7 +165,6 @@ class _SplashScreenState extends State<SplashScreen>
                               ],
                             ),
                             const SizedBox(height: 20),
-                            // Simple loading indicator stylized with white
                             Opacity(
                               opacity: _fadeAnimation.value > 0.8 ? 1.0 : 0.0,
                               child: const SizedBox(

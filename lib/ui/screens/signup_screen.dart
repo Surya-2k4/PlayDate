@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/utils/theme/app_theme.dart';
 import '../../../logic/auth_provider.dart';
+import '../../../logic/theme_provider.dart';
 
 import 'home_screen.dart';
 
@@ -107,6 +108,10 @@ class _SignUpScreenState extends State<SignUpScreen>
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = context.watch<ThemeProvider>();
+    final theme = Theme.of(context);
+    final isLove = themeProvider.isLoveTheme;
+
     return Scaffold(
       body: Stack(
         children: [
@@ -114,11 +119,11 @@ class _SignUpScreenState extends State<SignUpScreen>
           Container(
             height: double.infinity,
             width: double.infinity,
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [AppTheme.lightPink, Colors.white],
+                colors: [theme.primaryColor.withOpacity(0.12), Colors.white],
               ),
             ),
           ),
@@ -134,10 +139,12 @@ class _SignUpScreenState extends State<SignUpScreen>
                     right: -50 + (_floatingController.value * 40),
                     child: Opacity(
                       opacity: 0.1,
-                      child: const Icon(
-                        Icons.favorite,
+                      child: Icon(
+                        isLove
+                            ? Icons.favorite
+                            : Icons.sentiment_very_satisfied,
                         size: 250,
-                        color: AppTheme.primaryPink,
+                        color: theme.primaryColor,
                       ),
                     ),
                   ),
@@ -146,10 +153,10 @@ class _SignUpScreenState extends State<SignUpScreen>
                     left: -40 - (_floatingController.value * 10),
                     child: Opacity(
                       opacity: 0.1,
-                      child: const Icon(
-                        Icons.favorite,
+                      child: Icon(
+                        isLove ? Icons.favorite : Icons.mood,
                         size: 200,
-                        color: AppTheme.primaryPink,
+                        color: theme.primaryColor,
                       ),
                     ),
                   ),
@@ -158,10 +165,10 @@ class _SignUpScreenState extends State<SignUpScreen>
                     left: 40 + (_floatingController.value * 5),
                     child: Opacity(
                       opacity: 0.05,
-                      child: const Icon(
-                        Icons.favorite,
+                      child: Icon(
+                        isLove ? Icons.favorite : Icons.auto_awesome,
                         size: 80,
-                        color: AppTheme.primaryPink,
+                        color: theme.primaryColor,
                       ),
                     ),
                   ),
@@ -170,16 +177,83 @@ class _SignUpScreenState extends State<SignUpScreen>
                     right: 20,
                     child: Opacity(
                       opacity: 0.05,
-                      child: const Icon(
-                        Icons.favorite,
+                      child: Icon(
+                        isLove ? Icons.favorite : Icons.celebration,
                         size: 100,
-                        color: AppTheme.primaryPink,
+                        color: theme.primaryColor,
                       ),
                     ),
                   ),
                 ],
               );
             },
+          ),
+
+          // Modern Theme Toggle
+          Positioned(
+            top: MediaQuery.of(context).padding.top + 10,
+            right: 16,
+            child: GestureDetector(
+              onTap: () => themeProvider.toggleTheme(),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 400),
+                width: 75,
+                height: 36,
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color: Colors.white.withOpacity(0.3),
+                  border: Border.all(
+                    color: theme.primaryColor.withOpacity(0.2),
+                    width: 1.5,
+                  ),
+                ),
+                child: Stack(
+                  children: [
+                    AnimatedAlign(
+                      duration: const Duration(milliseconds: 400),
+                      alignment: isLove
+                          ? Alignment.centerRight
+                          : Alignment.centerLeft,
+                      curve: Curves.elasticOut,
+                      child: Container(
+                        width: 28,
+                        height: 28,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: theme.primaryColor,
+                          boxShadow: [
+                            BoxShadow(
+                              color: theme.primaryColor.withOpacity(0.4),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Icon(
+                          isLove ? Icons.favorite : Icons.people,
+                          size: 16,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                    Align(
+                      alignment: isLove
+                          ? Alignment.centerLeft
+                          : Alignment.centerRight,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: Icon(
+                          isLove ? Icons.people : Icons.favorite,
+                          size: 14,
+                          color: theme.primaryColor.withOpacity(0.3),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
 
           // Content
@@ -191,20 +265,19 @@ class _SignUpScreenState extends State<SignUpScreen>
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(
-                      Icons.favorite,
-                      color: AppTheme.primaryPink,
+                    Icon(
+                      isLove ? Icons.favorite : Icons.sentiment_very_satisfied,
+                      color: theme.primaryColor,
                       size: 30,
                     ),
                     const SizedBox(width: 8),
                     Text(
                       'PlayDate',
-                      style: AppTheme.lightTheme.textTheme.displayLarge
-                          ?.copyWith(
-                            fontSize: 24,
-                            fontStyle: FontStyle.italic,
-                            color: AppTheme.primaryPink,
-                          ),
+                      style: theme.textTheme.displayLarge?.copyWith(
+                        fontSize: 24,
+                        fontStyle: FontStyle.italic,
+                        color: theme.primaryColor,
+                      ),
                     ),
                   ],
                 ),
@@ -315,10 +388,10 @@ class _SignUpScreenState extends State<SignUpScreen>
                             ),
                             GestureDetector(
                               onTap: () => Navigator.pop(context),
-                              child: const Text(
+                              child: Text(
                                 'Sign In',
                                 style: TextStyle(
-                                  color: AppTheme.primaryPink,
+                                  color: theme.primaryColor,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),

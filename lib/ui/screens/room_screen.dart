@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:share_plus/share_plus.dart';
 
 import 'package:provider/provider.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
@@ -33,6 +35,11 @@ class _RoomScreenState extends State<RoomScreen> {
 
       roomProv.listenRoom(
         playerProv,
+        (newTheme) {
+          if (mounted) {
+            context.read<ThemeProvider>().setTheme(newTheme);
+          }
+        },
         () {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -130,7 +137,10 @@ class _RoomScreenState extends State<RoomScreen> {
                 actions: [
                   Center(
                     child: GestureDetector(
-                      onTap: () => themeProvider.toggleTheme(),
+                      onTap: () {
+                        themeProvider.toggleTheme();
+                        room.updateRoomTheme(themeProvider.themeType);
+                      },
                       child: AnimatedContainer(
                         duration: const Duration(milliseconds: 400),
                         width: 75,
@@ -295,106 +305,153 @@ class _RoomScreenState extends State<RoomScreen> {
                   children: [
                     Container(
                       padding: const EdgeInsets.all(24),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.auto_awesome,
-                            color: isLove
-                                ? Colors.orangeAccent
-                                : theme.primaryColor,
-                          ),
-                          const SizedBox(height: 10),
-                          Text(
-                            isLove
-                                ? "Together with you"
-                                : "Hanging out with friends",
-                            style: GoogleFonts.poppins(
-                              color: AppTheme.textGrey,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 16,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            player.controller != null
-                                ? "🎶 Watching together"
-                                : "Find something to watch!",
-                            style: TextStyle(
-                              color: theme.primaryColor,
-                              letterSpacing: 0.5,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          const SizedBox(height: 40),
-                          GestureDetector(
-                            onTap: () {
-                              showModalBottomSheet(
-                                context: context,
-                                isScrollControlled: true,
-                                backgroundColor: Colors.transparent,
-                                builder: (_) => const SearchScreen(),
-                              );
-                            },
-                            child: Container(
-                              height: 180,
-                              width: 180,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Colors.white,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: theme.primaryColor.withOpacity(0.25),
-                                    blurRadius: 30,
-                                    spreadRadius: 5,
+                      child: Center(
+                        child: SingleChildScrollView(
+                          padding: const EdgeInsets.symmetric(vertical: 20),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const SizedBox(height: 10),
+                              Text(
+                                isLove
+                                    ? "Together with you"
+                                    : "Hanging out with friends",
+                                style: GoogleFonts.poppins(
+                                  color: AppTheme.textGrey,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                player.controller != null
+                                    ? "🎶 Watching together"
+                                    : "Find something to watch!",
+                                style: TextStyle(
+                                  color: theme.primaryColor,
+                                  letterSpacing: 0.5,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              const SizedBox(height: 30),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "Room ID: ${room.currentRoomId}",
+                                    style: TextStyle(
+                                      color: AppTheme.textGrey.withOpacity(0.6),
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                  IconButton(
+                                    icon: Icon(
+                                      Icons.copy_rounded,
+                                      size: 16,
+                                      color: theme.primaryColor.withOpacity(
+                                        0.6,
+                                      ),
+                                    ),
+                                    padding: const EdgeInsets.all(4),
+                                    constraints: const BoxConstraints(),
+                                    onPressed: () async {
+                                      if (room.currentRoomId != null) {
+                                        await Clipboard.setData(
+                                          ClipboardData(
+                                            text: room.currentRoomId!,
+                                          ),
+                                        );
+                                        if (context.mounted) {
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            const SnackBar(
+                                              content: Text("Room ID copied!"),
+                                              duration: Duration(seconds: 1),
+                                            ),
+                                          );
+                                        }
+                                        // Share functionality
+                                        final roomId = room.currentRoomId!;
+                                        final isLove =
+                                            themeProvider.isLoveTheme;
+                                        final message = isLove
+                                            ? "Join my Love Room on PlayDate! ❤️\nRoom ID: $roomId"
+                                            : "Come watch videos with me on PlayDate! 🍿\nRoom ID: $roomId";
+
+                                        await Share.share(message);
+                                      }
+                                    },
                                   ),
                                 ],
                               ),
-                              child: Center(
+                              const SizedBox(height: 20),
+                              GestureDetector(
+                                onTap: () {
+                                  showModalBottomSheet(
+                                    context: context,
+                                    isScrollControlled: true,
+                                    backgroundColor: Colors.transparent,
+                                    builder: (_) => const SearchScreen(),
+                                  );
+                                },
                                 child: Container(
-                                  height: 140,
-                                  width: 140,
+                                  height: 180,
+                                  width: 180,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    color: theme.primaryColor,
-                                  ),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(
-                                        isLove
-                                            ? Icons.favorite
-                                            : Icons.movie_outlined,
-                                        size: 40,
-                                        color: Colors.white,
-                                      ),
-                                      const SizedBox(height: 10),
-                                      Text(
-                                        isLove
-                                            ? "Add Love\nMusic"
-                                            : "Add Fun\nVideo",
-                                        textAlign: TextAlign.center,
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16,
+                                    color: Colors.white,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: theme.primaryColor.withOpacity(
+                                          0.25,
                                         ),
+                                        blurRadius: 30,
+                                        spreadRadius: 5,
                                       ),
                                     ],
                                   ),
+                                  child: Center(
+                                    child: Container(
+                                      height: 140,
+                                      width: 140,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: theme.primaryColor,
+                                      ),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            isLove
+                                                ? Icons.favorite
+                                                : Icons.movie_outlined,
+                                            size: 40,
+                                            color: Colors.white,
+                                          ),
+                                          const SizedBox(height: 10),
+                                          Text(
+                                            isLove
+                                                ? "Add Love\nMusic"
+                                                : "Add Fun\nVideo",
+                                            textAlign: TextAlign.center,
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
+                            ],
                           ),
-                          const SizedBox(height: 30),
-                          Text(
-                            "Room ID: ${room.currentRoomId}",
-                            style: TextStyle(
-                              color: AppTheme.textGrey.withOpacity(0.6),
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
                     ),
                     const ChatScreen(),

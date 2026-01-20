@@ -147,6 +147,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       roomId,
       context.read<PlayerProvider>(),
       context.read<ChatProvider>(),
+      context.read<ThemeProvider>().themeType,
     );
     if (!mounted) return;
     Navigator.push(

@@ -11,6 +11,7 @@ class ThemeProvider extends ChangeNotifier {
   bool get isLoveTheme => _themeType == AppTheme.themeLove;
 
   void setTheme(String themeType) {
+    if (_themeType == themeType) return;
     _themeType = themeType;
     notifyListeners();
   }

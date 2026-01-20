@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../logic/player_provider.dart';
 import '../../core/constants/utils/theme/app_theme.dart';
 
@@ -38,6 +39,149 @@ class _SearchScreenState extends State<SearchScreen> {
     }
   }
 
+  void _showQueue() {
+    final theme = Theme.of(context);
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => Consumer<PlayerProvider>(
+        builder: (context, player, child) => DraggableScrollableSheet(
+          initialChildSize: 0.6,
+          minChildSize: 0.4,
+          maxChildSize: 0.9,
+          builder: (_, scrollController) => Container(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+            ),
+            child: Column(
+              children: [
+                Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.symmetric(vertical: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 8,
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.queue_music_rounded,
+                        color: theme.primaryColor,
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        "Playlist Stack",
+                        style: GoogleFonts.poppins(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.textBlack,
+                        ),
+                      ),
+                      const Spacer(),
+                      Text(
+                        "${player.queue.length} songs",
+                        style: TextStyle(
+                          color: AppTheme.textGrey,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Divider(),
+                Expanded(
+                  child: player.queue.isEmpty
+                      ? Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.music_off_rounded,
+                                size: 64,
+                                color: Colors.grey[300],
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                "Queue is empty.\nSearch for songs to add!",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(color: Colors.grey[400]),
+                              ),
+                            ],
+                          ),
+                        )
+                      : ReorderableListView.builder(
+                          scrollController: scrollController,
+                          itemCount: player.queue.length,
+                          onReorder: (oldIndex, newIndex) {
+                            player.reorderQueue(oldIndex, newIndex);
+                          },
+                          itemBuilder: (context, index) {
+                            final song = player.queue[index];
+                            return ListTile(
+                              key: ValueKey(song['id'] + index.toString()),
+                              onTap: () {
+                                player.playVideo(song['id']);
+                                player.removeFromQueue(index);
+                                Navigator.pop(context); // Close queue
+                                Navigator.pop(context); // Close search
+                              },
+                              leading: ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Image.network(
+                                  song['thumbnail'],
+                                  width: 50,
+                                  height: 35,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                              title: Text(
+                                song['title'],
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              subtitle: Text(
+                                song['author'],
+                                style: const TextStyle(fontSize: 12),
+                              ),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                    icon: const Icon(Icons.close, size: 20),
+                                    onPressed: () =>
+                                        player.removeFromQueue(index),
+                                  ),
+                                  const Icon(
+                                    Icons.drag_handle,
+                                    color: Colors.grey,
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   void dispose() {
     _yt.close();
@@ -73,13 +217,37 @@ class _SearchScreenState extends State<SearchScreen> {
               borderRadius: BorderRadius.circular(5),
             ),
           ),
-          const Text(
-            "Find your favorite song",
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: AppTheme.textBlack,
-            ),
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              const Text(
+                "Find your favorite song",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.textBlack,
+                ),
+              ),
+              Align(
+                alignment: Alignment.centerRight,
+                child: Consumer<PlayerProvider>(
+                  builder: (context, player, child) => Badge(
+                    label: Text(player.queue.length.toString()),
+                    isLabelVisible: player.queue.isNotEmpty,
+                    backgroundColor: theme.primaryColor,
+                    textColor: Colors.white,
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.queue_music_rounded,
+                        color: theme.primaryColor,
+                      ),
+                      onPressed: _showQueue,
+                      tooltip: "Playlist Stack",
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 20),
           TextField(
@@ -188,10 +356,100 @@ class _SearchScreenState extends State<SearchScreen> {
                             ),
                           ),
                           onTap: () {
-                            context.read<PlayerProvider>().playVideo(
-                              video.id.value,
+                            final player = context.read<PlayerProvider>();
+                            showModalBottomSheet(
+                              context: context,
+                              backgroundColor: Colors.transparent,
+                              builder: (context) => Container(
+                                padding: const EdgeInsets.all(24),
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.vertical(
+                                    top: Radius.circular(30),
+                                  ),
+                                ),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Container(
+                                      width: 40,
+                                      height: 4,
+                                      margin: const EdgeInsets.only(bottom: 24),
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey[300],
+                                        borderRadius: BorderRadius.circular(2),
+                                      ),
+                                    ),
+                                    const Text(
+                                      "Song Options",
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: AppTheme.textBlack,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 24),
+                                    ListTile(
+                                      leading: CircleAvatar(
+                                        backgroundColor: theme.primaryColor
+                                            .withOpacity(0.1),
+                                        child: Icon(
+                                          Icons.play_arrow_rounded,
+                                          color: theme.primaryColor,
+                                        ),
+                                      ),
+                                      title: const Text(
+                                        "Play Now",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      onTap: () {
+                                        player.playVideo(video.id.value);
+                                        Navigator.pop(context); // Close sheet
+                                        Navigator.pop(context); // Close search
+                                      },
+                                    ),
+                                    ListTile(
+                                      leading: CircleAvatar(
+                                        backgroundColor: Colors.orange
+                                            .withOpacity(0.1),
+                                        child: const Icon(
+                                          Icons.queue_music_rounded,
+                                          color: Colors.orange,
+                                        ),
+                                      ),
+                                      title: const Text(
+                                        "Add to Queue",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      onTap: () {
+                                        player.addToQueue({
+                                          'id': video.id.value,
+                                          'title': video.title,
+                                          'author': video.author,
+                                          'thumbnail':
+                                              video.thumbnails.lowResUrl,
+                                        });
+                                        Navigator.pop(context); // Close sheet
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          SnackBar(
+                                            content: Text("Added to queue!"),
+                                            behavior: SnackBarBehavior.floating,
+                                            backgroundColor: theme.primaryColor,
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                    const SizedBox(height: 16),
+                                  ],
+                                ),
+                              ),
                             );
-                            Navigator.pop(context);
                           },
                         ),
                       );

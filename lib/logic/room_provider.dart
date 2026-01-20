@@ -17,6 +17,7 @@ class RoomProvider extends ChangeNotifier {
     String roomId,
     PlayerProvider player,
     ChatProvider chat,
+    String initialTheme,
   ) async {
     _roomRef = FirebaseDatabase.instance.ref(roomId);
     _currentRoomId = roomId;
@@ -30,6 +31,7 @@ class RoomProvider extends ChangeNotifier {
       "messages": {},
       "hostActive": true,
       "joinerActive": false,
+      "theme": initialTheme,
     });
 
     // Automatically clean up room if host disconnects unexpectedly
@@ -61,6 +63,7 @@ class RoomProvider extends ChangeNotifier {
 
   void listenRoom(
     PlayerProvider player,
+    void Function(String) onThemeChanged,
     VoidCallback onHostLeft, {
     VoidCallback? onJoinerLeft,
   }) {
@@ -98,12 +101,32 @@ class RoomProvider extends ChangeNotifier {
       final int positionMs = data['positionMs'] ?? 0;
       final String? videoId = data['videoId'];
 
+      List<Map<String, dynamic>>? queue;
+      if (data['queue'] != null) {
+        queue = (data['queue'] as List)
+            .map((e) => Map<String, dynamic>.from(e as Map))
+            .toList();
+      }
+
       player.syncFromRoom(
         isPlaying: isPlaying,
         positionMs: positionMs,
         videoId: videoId,
+        queue: queue,
       );
+
+      // Sync Theme
+      final String? themeType = data['theme'];
+      if (themeType != null) {
+        onThemeChanged(themeType);
+      }
     });
+  }
+
+  Future<void> updateRoomTheme(String themeType) async {
+    if (_roomRef != null) {
+      await _roomRef!.update({"theme": themeType});
+    }
   }
 
   Future<void> leaveRoom() async {

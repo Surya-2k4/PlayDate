@@ -807,7 +807,7 @@ class _HeartBurstState extends State<HeartBurst>
     final centerX = screenSize.width / 2;
     final centerY = screenSize.height / 2;
 
-    final emoji = isLove ? "❤️" : "😂";
+    final emoji = isLove ? "💖" : "😂";
 
     return RepaintBoundary(
       child: AnimatedBuilder(

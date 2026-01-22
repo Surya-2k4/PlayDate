@@ -142,18 +142,29 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       return;
     }
 
-    final roomId = _generateRoomId();
-    await context.read<RoomProvider>().createRoom(
-      roomId,
-      context.read<PlayerProvider>(),
-      context.read<ChatProvider>(),
-      context.read<ThemeProvider>().themeType,
-    );
-    if (!mounted) return;
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const RoomScreen()),
-    );
+    try {
+      final roomId = _generateRoomId();
+      await context.read<RoomProvider>().createRoom(
+        roomId,
+        context.read<PlayerProvider>(),
+        context.read<ChatProvider>(),
+        context.read<ThemeProvider>().themeType,
+      );
+      if (!mounted) return;
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const RoomScreen()),
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Failed to create room: ${e.toString()}"),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+      }
+    }
   }
 
   void _showJoinDialog() {
@@ -254,9 +265,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 padding: const EdgeInsets.all(4),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
-                  color: theme.primaryColor.withOpacity(0.1),
+                  color: theme.primaryColor.withValues(alpha: 0.1),
                   border: Border.all(
-                    color: theme.primaryColor.withOpacity(0.2),
+                    color: theme.primaryColor.withValues(alpha: 0.2),
                     width: 1.5,
                   ),
                 ),
@@ -276,7 +287,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           color: theme.primaryColor,
                           boxShadow: [
                             BoxShadow(
-                              color: theme.primaryColor.withOpacity(0.4),
+                              color: theme.primaryColor.withValues(alpha: 0.4),
                               blurRadius: 8,
                               offset: const Offset(0, 2),
                             ),
@@ -298,7 +309,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         child: Icon(
                           isLove ? Icons.people : Icons.favorite,
                           size: 14,
-                          color: theme.primaryColor.withOpacity(0.3),
+                          color: theme.primaryColor.withValues(alpha: 0.3),
                         ),
                       ),
                     ),
@@ -323,7 +334,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [theme.primaryColor.withOpacity(0.1), Colors.white],
+            colors: [theme.primaryColor.withValues(alpha: 0.1), Colors.white],
           ),
         ),
         child: Stack(
@@ -452,7 +463,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: color.withOpacity(0.2 * value),
+                color: color.withValues(alpha: 0.2 * value),
                 blurRadius: 30,
                 spreadRadius: 10,
               ),
@@ -480,7 +491,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         borderRadius: BorderRadius.circular(30),
         boxShadow: [
           BoxShadow(
-            color: color.withOpacity(0.1),
+            color: color.withValues(alpha: 0.1),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -491,7 +502,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(Icons.auto_awesome, color: color),
@@ -566,7 +577,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         boxShadow: isPrimary
             ? [
                 BoxShadow(
-                  color: themeColor.withOpacity(0.3),
+                  color: themeColor.withValues(alpha: 0.3),
                   blurRadius: 15,
                   offset: const Offset(0, 8),
                 ),

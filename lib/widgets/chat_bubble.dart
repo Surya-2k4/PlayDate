@@ -95,7 +95,7 @@ class ChatBubble extends StatelessWidget {
                         ? Colors.transparent
                         : (isMe
                               ? theme.primaryColor
-                              : theme.primaryColor.withOpacity(0.1)),
+                              : theme.primaryColor.withValues(alpha: 0.1)),
                     borderRadius: BorderRadius.only(
                       topLeft: const Radius.circular(20),
                       topRight: const Radius.circular(20),
@@ -106,7 +106,7 @@ class ChatBubble extends StatelessWidget {
                         ? []
                         : [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
+                              color: Colors.black.withValues(alpha: 0.05),
                               blurRadius: 8,
                               offset: const Offset(0, 4),
                             ),
@@ -134,7 +134,7 @@ class ChatBubble extends StatelessWidget {
                           time,
                           style: TextStyle(
                             color: (isMe ? Colors.white : AppTheme.textBlack)
-                                .withOpacity(0.6),
+                                .withValues(alpha: 0.6),
                             fontSize: 10,
                             fontWeight: FontWeight.w300,
                           ),
@@ -157,13 +157,13 @@ class ChatBubble extends StatelessWidget {
                         borderRadius: BorderRadius.circular(15),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
+                            color: Colors.black.withValues(alpha: 0.1),
                             blurRadius: 4,
                             offset: const Offset(0, 2),
                           ),
                         ],
                         border: Border.all(
-                          color: theme.primaryColor.withOpacity(0.1),
+                          color: theme.primaryColor.withValues(alpha: 0.1),
                         ),
                       ),
                       child: Row(

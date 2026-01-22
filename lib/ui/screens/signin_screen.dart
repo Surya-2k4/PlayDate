@@ -160,7 +160,7 @@ class _SignInScreenState extends State<SignInScreen>
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [theme.primaryColor.withOpacity(0.12), Colors.white],
+                colors: [theme.primaryColor.withValues(alpha: 0.12), Colors.white],
               ),
             ),
           ),
@@ -239,9 +239,9 @@ class _SignInScreenState extends State<SignInScreen>
                 padding: const EdgeInsets.all(4),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
-                  color: Colors.white.withOpacity(0.3),
+                  color: Colors.white.withValues(alpha: 0.3),
                   border: Border.all(
-                    color: theme.primaryColor.withOpacity(0.2),
+                    color: theme.primaryColor.withValues(alpha: 0.2),
                     width: 1.5,
                   ),
                 ),
@@ -261,7 +261,7 @@ class _SignInScreenState extends State<SignInScreen>
                           color: theme.primaryColor,
                           boxShadow: [
                             BoxShadow(
-                              color: theme.primaryColor.withOpacity(0.4),
+                              color: theme.primaryColor.withValues(alpha: 0.4),
                               blurRadius: 8,
                               offset: const Offset(0, 2),
                             ),
@@ -283,7 +283,7 @@ class _SignInScreenState extends State<SignInScreen>
                         child: Icon(
                           isLove ? Icons.people : Icons.favorite,
                           size: 14,
-                          color: theme.primaryColor.withOpacity(0.3),
+                          color: theme.primaryColor.withValues(alpha: 0.3),
                         ),
                       ),
                     ),
@@ -332,7 +332,7 @@ class _SignInScreenState extends State<SignInScreen>
                         left: 40,
                         child: Icon(
                           Icons.cloud,
-                          color: Colors.white.withOpacity(0.8),
+                          color: Colors.white.withValues(alpha: 0.8),
                           size: 40,
                         ),
                       ),
@@ -341,7 +341,7 @@ class _SignInScreenState extends State<SignInScreen>
                         right: 60,
                         child: Icon(
                           Icons.cloud,
-                          color: Colors.white.withOpacity(0.8),
+                          color: Colors.white.withValues(alpha: 0.8),
                           size: 30,
                         ),
                       ),
@@ -350,7 +350,7 @@ class _SignInScreenState extends State<SignInScreen>
                         left: 80,
                         child: Icon(
                           Icons.cloud,
-                          color: Colors.white.withOpacity(0.8),
+                          color: Colors.white.withValues(alpha: 0.8),
                           size: 50,
                         ),
                       ),
@@ -389,7 +389,7 @@ class _SignInScreenState extends State<SignInScreen>
                     borderRadius: BorderRadius.circular(30),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
+                        color: Colors.black.withValues(alpha: 0.05),
                         blurRadius: 20,
                         offset: const Offset(0, 10),
                       ),

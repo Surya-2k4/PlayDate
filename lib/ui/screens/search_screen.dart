@@ -295,7 +295,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           color: AppTheme.softGrey,
                           borderRadius: BorderRadius.circular(15),
                           border: Border.all(
-                            color: Colors.black.withOpacity(0.05),
+                            color: Colors.black.withValues(alpha: 0.05),
                           ),
                         ),
                         child: ListTile(
@@ -392,7 +392,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                     ListTile(
                                       leading: CircleAvatar(
                                         backgroundColor: theme.primaryColor
-                                            .withOpacity(0.1),
+                                            .withValues(alpha: 0.1),
                                         child: Icon(
                                           Icons.play_arrow_rounded,
                                           color: theme.primaryColor,
@@ -413,7 +413,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                     ListTile(
                                       leading: CircleAvatar(
                                         backgroundColor: Colors.orange
-                                            .withOpacity(0.1),
+                                            .withValues(alpha: 0.1),
                                         child: const Icon(
                                           Icons.queue_music_rounded,
                                           color: Colors.orange,

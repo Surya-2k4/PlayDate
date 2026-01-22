@@ -41,53 +41,57 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyAaRF3XIZSwJBmOFmQosfqq_dwV-csRCzU',
-    appId: '1:258711765270:web:0c218ef12bf1be9e6b9037',
-    messagingSenderId: '258711765270',
-    projectId: 'playdate-2f99f',
-    authDomain: 'playdate-2f99f.firebaseapp.com',
-    databaseURL: 'https://playdate-2f99f-default-rtdb.asia-southeast1.firebasedatabase.app',
-    storageBucket: 'playdate-2f99f.firebasestorage.app',
-    measurementId: 'G-EY7B2MS9LC',
+    apiKey: 'AIzaSyDfWtY3KrcCZ7GDjZL0OQmEBH8Z5RBhH8g',
+    appId: '1:310890944740:web:e8ad9ad4e4b8e17ec274f1',
+    messagingSenderId: '310890944740',
+    projectId: 'playdate-8c9a4',
+    authDomain: 'playdate-8c9a4.firebaseapp.com',
+    databaseURL:
+        'https://playdate-8c9a4-default-rtdb.asia-southeast1.firebasedatabase.app',
+    storageBucket: 'playdate-8c9a4.firebasestorage.app',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyCCOxsKLwfvnlj11lfohSj4ReWd7GlkhOc',
-    appId: '1:258711765270:android:caa1bece2a2907a46b9037',
-    messagingSenderId: '258711765270',
-    projectId: 'playdate-2f99f',
-    databaseURL: 'https://playdate-2f99f-default-rtdb.asia-southeast1.firebasedatabase.app',
-    storageBucket: 'playdate-2f99f.firebasestorage.app',
+    apiKey: 'AIzaSyDfWtY3KrcCZ7GDjZL0OQmEBH8Z5RBhH8g',
+    appId: '1:310890944740:android:e8ad9ad4e4b8e17ec274f1',
+    messagingSenderId: '310890944740',
+    projectId: 'playdate-8c9a4',
+    databaseURL:
+        'https://playdate-8c9a4-default-rtdb.asia-southeast1.firebasedatabase.app',
+    storageBucket: 'playdate-8c9a4.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyC4fCQhRT6rwbVZ4qjpX1WXLdFvMl5Ol-o',
-    appId: '1:258711765270:ios:8bf05abed4441e366b9037',
-    messagingSenderId: '258711765270',
-    projectId: 'playdate-2f99f',
-    databaseURL: 'https://playdate-2f99f-default-rtdb.asia-southeast1.firebasedatabase.app',
-    storageBucket: 'playdate-2f99f.firebasestorage.app',
-    iosBundleId: 'com.example.playdate',
+    appId: '1:310890944740:ios:8bf05abed4441e366b9037',
+    messagingSenderId: '310890944740',
+    projectId: 'playdate-8c9a4',
+    databaseURL:
+        'https://playdate-8c9a4-default-rtdb.asia-southeast1.firebasedatabase.app',
+    storageBucket: 'playdate-8c9a4.firebasestorage.app',
+    iosBundleId: 'com.surya.playdate',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyC4fCQhRT6rwbVZ4qjpX1WXLdFvMl5Ol-o',
-    appId: '1:258711765270:ios:8bf05abed4441e366b9037',
-    messagingSenderId: '258711765270',
-    projectId: 'playdate-2f99f',
-    databaseURL: 'https://playdate-2f99f-default-rtdb.asia-southeast1.firebasedatabase.app',
-    storageBucket: 'playdate-2f99f.firebasestorage.app',
-    iosBundleId: 'com.example.playdate',
+    appId: '1:310890944740:ios:8bf05abed4441e366b9037',
+    messagingSenderId: '310890944740',
+    projectId: 'playdate-8c9a4',
+    databaseURL:
+        'https://playdate-8c9a4-default-rtdb.asia-southeast1.firebasedatabase.app',
+    storageBucket: 'playdate-8c9a4.firebasestorage.app',
+    iosBundleId: 'com.surya.playdate',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
     apiKey: 'AIzaSyAaRF3XIZSwJBmOFmQosfqq_dwV-csRCzU',
-    appId: '1:258711765270:web:79965bab2dff365b6b9037',
-    messagingSenderId: '258711765270',
-    projectId: 'playdate-2f99f',
-    authDomain: 'playdate-2f99f.firebaseapp.com',
-    databaseURL: 'https://playdate-2f99f-default-rtdb.asia-southeast1.firebasedatabase.app',
-    storageBucket: 'playdate-2f99f.firebasestorage.app',
+    appId: '1:310890944740:web:79965bab2dff365b6b9037',
+    messagingSenderId: '310890944740',
+    projectId: 'playdate-8c9a4',
+    authDomain: 'playdate-8c9a4.firebaseapp.com',
+    databaseURL:
+        'https://playdate-8c9a4-default-rtdb.asia-southeast1.firebasedatabase.app',
+    storageBucket: 'playdate-8c9a4.firebasestorage.app',
     measurementId: 'G-3XE4L4NNZF',
   );
 }

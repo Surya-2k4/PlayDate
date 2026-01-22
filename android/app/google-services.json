@@ -1,50 +1,35 @@
 {
   "project_info": {
-    "project_number": "258711765270",
-    "firebase_url": "https://playdate-2f99f-default-rtdb.asia-southeast1.firebasedatabase.app",
-    "project_id": "playdate-2f99f",
-    "storage_bucket": "playdate-2f99f.firebasestorage.app"
+    "project_number": "310890944740",
+    "project_id": "playdate-8c9a4",
+    "firebase_url": "https://playdate-8c9a4-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "storage_bucket": "playdate-8c9a4.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:258711765270:android:caa1bece2a2907a46b9037",
+        "mobilesdk_app_id": "1:310890944740:android:e8ad9ad4e4b8e17ec274f1",
         "android_client_info": {
-          "package_name": "com.example.playdate"
+          "package_name": "com.surya.playdate"
         }
       },
       "oauth_client": [
         {
-          "client_id": "258711765270-i5mfu5q1j6j0aget0467jeodubga7266.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.playdate",
-            "certificate_hash": "2d64f9af3f75227ced04be1017d35c2d9c80bff2"
-          }
-        },
-        {
-          "client_id": "258711765270-qgifvplfcvldkjutc2vb7v9jjg09afgg.apps.googleusercontent.com",
+          "client_id": "310890944740-g6k6mkhalmni5bop3d08cd69285vc054.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCCOxsKLwfvnlj11lfohSj4ReWd7GlkhOc"
+          "current_key": "AIzaSyDfWtY3KrcCZ7GDjZL0OQmEBH8Z5RBhH8g"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "258711765270-qgifvplfcvldkjutc2vb7v9jjg09afgg.apps.googleusercontent.com",
+              "client_id": "310890944740-g6k6mkhalmni5bop3d08cd69285vc054.apps.googleusercontent.com",
               "client_type": 3
-            },
-            {
-              "client_id": "258711765270-5hu2b0hmpm0qsqqna9vv0esc1k9bdokn.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.example.playdate"
-              }
             }
           ]
         }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_core/firebase_core.dart';
+import '../firebase_options.dart';
 
 class ChatProvider extends ChangeNotifier {
   DatabaseReference? _chatRef;
@@ -20,8 +22,12 @@ class ChatProvider extends ChangeNotifier {
   }
 
   void attachRoom(String roomId) {
-    _chatRef = FirebaseDatabase.instance.ref("$roomId/messages");
-    _typingRef = FirebaseDatabase.instance.ref("$roomId/typing");
+    final db = FirebaseDatabase.instanceFor(
+      app: Firebase.app(),
+      databaseURL: DefaultFirebaseOptions.currentPlatform.databaseURL,
+    );
+    _chatRef = db.ref("$roomId/messages");
+    _typingRef = db.ref("$roomId/typing");
 
     _chatRef?.onChildAdded.listen((event) {
       if (!_isChatVisible) {

@@ -116,7 +116,7 @@ class AppTheme {
             borderRadius: BorderRadius.circular(18),
           ),
           elevation: 4,
-          shadowColor: primary.withOpacity(0.4),
+          shadowColor: primary.withValues(alpha: 0.4),
           textStyle: GoogleFonts.poppins(
             fontWeight: FontWeight.bold,
             fontSize: 16,
@@ -143,7 +143,7 @@ class AppTheme {
           borderRadius: BorderRadius.circular(18),
           borderSide: BorderSide(color: primary, width: 2),
         ),
-        hintStyle: GoogleFonts.inter(color: textGrey.withOpacity(0.5)),
+        hintStyle: GoogleFonts.inter(color: textGrey.withValues(alpha: 0.5)),
       ),
     );
   }

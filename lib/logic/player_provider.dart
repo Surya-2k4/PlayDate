@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_core/firebase_core.dart';
+import '../firebase_options.dart';
 
 class PlayerProvider extends ChangeNotifier {
   YoutubePlayerController? _controller;
@@ -20,7 +22,10 @@ class PlayerProvider extends ChangeNotifier {
 
   /// Called by RoomProvider when room is created/joined
   void attachRoom(String roomId, bool isHost) {
-    _roomRef = FirebaseDatabase.instance.ref(roomId);
+    _roomRef = FirebaseDatabase.instanceFor(
+      app: Firebase.app(),
+      databaseURL: DefaultFirebaseOptions.currentPlatform.databaseURL,
+    ).ref(roomId);
     _isHost = isHost;
   }
 

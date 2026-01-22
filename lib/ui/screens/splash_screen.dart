@@ -135,7 +135,9 @@ class _SplashScreenState extends State<SplashScreen>
                                       Container(
                                         height: 2,
                                         width: 60,
-                                        color: Colors.white.withOpacity(0.9),
+                                        color: Colors.white.withValues(
+                                          alpha: 0.9,
+                                        ),
                                       ),
                                       TweenAnimationBuilder(
                                         tween: Tween<double>(

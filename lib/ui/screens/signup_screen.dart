@@ -123,7 +123,10 @@ class _SignUpScreenState extends State<SignUpScreen>
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [theme.primaryColor.withOpacity(0.12), Colors.white],
+                colors: [
+                  theme.primaryColor.withValues(alpha: 0.12),
+                  Colors.white,
+                ],
               ),
             ),
           ),
@@ -202,9 +205,9 @@ class _SignUpScreenState extends State<SignUpScreen>
                 padding: const EdgeInsets.all(4),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
-                  color: Colors.white.withOpacity(0.3),
+                  color: Colors.white.withValues(alpha: 0.3),
                   border: Border.all(
-                    color: theme.primaryColor.withOpacity(0.2),
+                    color: theme.primaryColor.withValues(alpha: 0.2),
                     width: 1.5,
                   ),
                 ),
@@ -224,7 +227,7 @@ class _SignUpScreenState extends State<SignUpScreen>
                           color: theme.primaryColor,
                           boxShadow: [
                             BoxShadow(
-                              color: theme.primaryColor.withOpacity(0.4),
+                              color: theme.primaryColor.withValues(alpha: 0.4),
                               blurRadius: 8,
                               offset: const Offset(0, 2),
                             ),
@@ -246,7 +249,7 @@ class _SignUpScreenState extends State<SignUpScreen>
                         child: Icon(
                           isLove ? Icons.people : Icons.favorite,
                           size: 14,
-                          color: theme.primaryColor.withOpacity(0.3),
+                          color: theme.primaryColor.withValues(alpha: 0.3),
                         ),
                       ),
                     ),
@@ -291,7 +294,7 @@ class _SignUpScreenState extends State<SignUpScreen>
                     borderRadius: BorderRadius.circular(30),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
+                        color: Colors.black.withValues(alpha: 0.05),
                         blurRadius: 20,
                         offset: const Offset(0, 10),
                       ),

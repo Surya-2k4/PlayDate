@@ -8,7 +8,7 @@
 PRODUCT_NAME = playdate
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.example.playdate
+PRODUCT_BUNDLE_IDENTIFIER = com.surya.playdate
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2025 com.example. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2025 com.surya. All rights reserved.

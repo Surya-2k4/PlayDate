@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_core/firebase_core.dart';
+import '../firebase_options.dart';
 import 'player_provider.dart';
 import 'chat_provider.dart';
 
@@ -19,27 +21,45 @@ class RoomProvider extends ChangeNotifier {
     ChatProvider chat,
     String initialTheme,
   ) async {
-    _roomRef = FirebaseDatabase.instance.ref(roomId);
-    _currentRoomId = roomId;
-    _isHost = true;
-    _wasJoinerEverHere = false;
+    try {
+      debugPrint("Creating room: $roomId");
+      _roomRef = FirebaseDatabase.instanceFor(
+        app: Firebase.app(),
+        databaseURL: DefaultFirebaseOptions.currentPlatform.databaseURL,
+      ).ref(roomId);
+      _currentRoomId = roomId;
+      _isHost = true;
+      _wasJoinerEverHere = false;
 
-    await _roomRef!.set({
-      "isPlaying": false,
-      "positionMs": 0,
-      "videoId": null,
-      "messages": {},
-      "hostActive": true,
-      "joinerActive": false,
-      "theme": initialTheme,
-    });
+      await _roomRef!
+          .set({
+            "isPlaying": false,
+            "positionMs": 0,
+            "videoId": null,
+            "messages": {},
+            "hostActive": true,
+            "joinerActive": false,
+            "theme": initialTheme,
+          })
+          .timeout(
+            const Duration(seconds: 10),
+            onTimeout: () {
+              throw Exception(
+                "Database timeout: Please check your Realtime Database URL and connection.",
+              );
+            },
+          );
 
-    // Automatically clean up room if host disconnects unexpectedly
-    _roomRef!.onDisconnect().remove();
+      // Automatically clean up room if host disconnects unexpectedly
+      _roomRef!.onDisconnect().remove();
 
-    player.attachRoom(roomId, true);
-    chat.attachRoom(roomId);
-    notifyListeners();
+      player.attachRoom(roomId, true);
+      chat.attachRoom(roomId);
+      notifyListeners();
+    } catch (e) {
+      debugPrint("Error creating room: $e");
+      rethrow;
+    }
   }
 
   Future<void> joinRoom(
@@ -47,7 +67,10 @@ class RoomProvider extends ChangeNotifier {
     PlayerProvider player,
     ChatProvider chat,
   ) async {
-    _roomRef = FirebaseDatabase.instance.ref(roomId);
+    _roomRef = FirebaseDatabase.instanceFor(
+      app: Firebase.app(),
+      databaseURL: DefaultFirebaseOptions.currentPlatform.databaseURL,
+    ).ref(roomId);
     _currentRoomId = roomId;
     _isHost = false;
 

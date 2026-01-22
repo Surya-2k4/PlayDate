@@ -148,9 +148,9 @@ class _RoomScreenState extends State<RoomScreen> {
                         padding: const EdgeInsets.all(4),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20),
-                          color: theme.primaryColor.withOpacity(0.1),
+                          color: theme.primaryColor.withValues(alpha: 0.1),
                           border: Border.all(
-                            color: theme.primaryColor.withOpacity(0.2),
+                            color: theme.primaryColor.withValues(alpha: 0.2),
                             width: 1.5,
                           ),
                         ),
@@ -196,7 +196,9 @@ class _RoomScreenState extends State<RoomScreen> {
                                 child: Icon(
                                   isLove ? Icons.people : Icons.favorite,
                                   size: 14,
-                                  color: theme.primaryColor.withOpacity(0.3),
+                                  color: theme.primaryColor.withValues(
+                                    alpha: 0.3,
+                                  ),
                                 ),
                               ),
                             ),
@@ -219,7 +221,7 @@ class _RoomScreenState extends State<RoomScreen> {
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [theme.primaryColor.withOpacity(0.1), Colors.white],
+              colors: [theme.primaryColor.withValues(alpha: 0.1), Colors.white],
             ),
           ),
           child: Column(
@@ -234,7 +236,7 @@ class _RoomScreenState extends State<RoomScreen> {
                   borderRadius: BorderRadius.circular(25),
                   boxShadow: [
                     BoxShadow(
-                      color: theme.primaryColor.withOpacity(0.2),
+                      color: theme.primaryColor.withValues(alpha: 0.2),
                       blurRadius: 15,
                       spreadRadius: 2,
                     ),
@@ -275,7 +277,9 @@ class _RoomScreenState extends State<RoomScreen> {
                                       ? Icons.favorite
                                       : Icons.sentiment_very_satisfied,
                                   size: 60 + (value * 20),
-                                  color: theme.primaryColor.withOpacity(0.6),
+                                  color: theme.primaryColor.withValues(
+                                    alpha: 0.6,
+                                  ),
                                 );
                               },
                             ),
@@ -285,7 +289,9 @@ class _RoomScreenState extends State<RoomScreen> {
                                   ? "Waiting for a romantic tune..."
                                   : "Let's pick something to watch!",
                               style: TextStyle(
-                                color: theme.primaryColor.withOpacity(0.8),
+                                color: theme.primaryColor.withValues(
+                                  alpha: 0.8,
+                                ),
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
                                 fontStyle: FontStyle.italic,
@@ -340,7 +346,9 @@ class _RoomScreenState extends State<RoomScreen> {
                                   Text(
                                     "Room ID: ${room.currentRoomId}",
                                     style: TextStyle(
-                                      color: AppTheme.textGrey.withOpacity(0.6),
+                                      color: AppTheme.textGrey.withValues(
+                                        alpha: 0.6,
+                                      ),
                                       fontWeight: FontWeight.bold,
                                       fontSize: 14,
                                     ),

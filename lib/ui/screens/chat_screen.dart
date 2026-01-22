@@ -50,8 +50,10 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     final isTyping = _messageController.text.isNotEmpty;
     if (_isTyping != isTyping) {
       _isTyping = isTyping;
-      final userName = context.read<AuthProvider>().userName ?? "Anonymous";
-      context.read<ChatProvider>().setTyping(userName, isTyping);
+      final authProvider = context.read<AuthProvider>();
+      final userName = authProvider.userName ?? "Anonymous";
+      final userId = authProvider.user?.uid ?? userName;
+      context.read<ChatProvider>().setTyping(userId, isTyping);
     }
   }
 
@@ -59,11 +61,13 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     final text = _messageController.text.trim();
     if (text.isEmpty) return;
 
-    final userName = context.read<AuthProvider>().userName ?? "Anonymous";
+    final authProvider = context.read<AuthProvider>();
+    final userName = authProvider.userName ?? "Anonymous";
+    final userId = authProvider.user?.uid ?? userName;
 
     context.read<ChatProvider>().sendMessage(
       sender: userName,
-      senderId: userName,
+      senderId: userId,
       text: text,
     );
 
@@ -72,10 +76,12 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   }
 
   void _sendSticker(String emoji) {
-    final userName = context.read<AuthProvider>().userName ?? "Anonymous";
+    final authProvider = context.read<AuthProvider>();
+    final userName = authProvider.userName ?? "Anonymous";
+    final userId = authProvider.user?.uid ?? userName;
     context.read<ChatProvider>().sendMessage(
       sender: userName,
-      senderId: userName,
+      senderId: userId,
       text: emoji,
       type: 'sticker',
     );
@@ -83,8 +89,10 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   }
 
   void _sendReaction() {
-    final userName = context.read<AuthProvider>().userName ?? "Anonymous";
-    context.read<ChatProvider>().sendLoveReaction(userName);
+    final authProvider = context.read<AuthProvider>();
+    final userName = authProvider.userName ?? "Anonymous";
+    final userId = authProvider.user?.uid ?? userName;
+    context.read<ChatProvider>().sendLoveReaction(userName, userId);
     _showHeartAnimation();
   }
 
@@ -390,10 +398,12 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     final theme = Theme.of(context);
     return GestureDetector(
       onTap: () {
-        final userName = context.read<AuthProvider>().userName ?? "Anonymous";
+        final authProvider = context.read<AuthProvider>();
+        final userName = authProvider.userName ?? "Anonymous";
+        final userId = authProvider.user?.uid ?? userName;
         context.read<ChatProvider>().sendMessage(
           sender: userName,
-          senderId: userName,
+          senderId: userId,
           text: emoji,
         );
         _scrollToBottom();
@@ -421,13 +431,15 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     final chatProvider = context.watch<ChatProvider>();
     final themeProvider = context.watch<ThemeProvider>();
-    final currentUserName = context.watch<AuthProvider>().userName;
+    final authProvider = context.watch<AuthProvider>();
+    final currentUserName = authProvider.userName;
+    final currentUserId = authProvider.user?.uid ?? currentUserName;
     final theme = Theme.of(context);
     final isLove = themeProvider.isLoveTheme;
 
     // Filter typing users (excluding me)
     final typingText = chatProvider.typingUsers.entries
-        .where((e) => e.key != currentUserName && e.value)
+        .where((e) => e.key != currentUserId && e.value)
         .map((e) => e.key)
         .join(", ");
 
@@ -546,7 +558,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                       );
                       final timestamp = (latest['timestamp'] ?? 0) as int;
                       if (latest['type'] == 'reaction' &&
-                          latest['sender'] != currentUserName &&
+                          latest['senderId'] != currentUserId &&
                           timestamp > _lastProcessedTimestamp) {
                         _lastProcessedTimestamp = timestamp;
                         WidgetsBinding.instance.addPostFrameCallback(
@@ -571,12 +583,13 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                           messages[index].value,
                         );
                         final sender = message['sender'] ?? 'Unknown';
+                        final senderId = message['senderId'] ?? sender;
                         final text = message['text'] ?? '';
                         final timestamp = message['timestamp'] as int?;
                         final type = message['type'] as String?;
                         final reactions =
                             message['reactions'] as Map<dynamic, dynamic>?;
-                        final bool isMe = sender == currentUserName;
+                        final bool isMe = senderId == currentUserId;
 
                         if (type == 'reaction') {
                           return Center(
@@ -778,10 +791,10 @@ class _HeartBurstState extends State<HeartBurst>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 4000),
+      duration: const Duration(milliseconds: 2000),
     );
     final random = math.Random();
-    for (int i = 0; i < 6; i++) {
+    for (int i = 0; i < 4; i++) {
       double direction = math.pi + (random.nextDouble() * math.pi);
       double distance = 400 + random.nextDouble() * 400;
       _points.add(

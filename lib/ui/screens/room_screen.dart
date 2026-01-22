@@ -67,18 +67,17 @@ class _RoomScreenState extends State<RoomScreen> {
   Future<bool> _onWillPop() async {
     final roomProv = context.read<RoomProvider>();
     final theme = Theme.of(context);
-    if (!roomProv.isHost) {
-      await roomProv.leaveRoom();
-      return true;
-    }
 
     final result = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: AppTheme.cardBg,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Text("Leave Room?"),
-        content: const Text(
-          "As the host, if you leave, the room will be closed for everyone.",
+        content: Text(
+          roomProv.isHost
+              ? "As the host, if you leave, the room will be closed for everyone."
+              : "Are you sure you want to leave the room?",
         ),
         actions: [
           TextButton(
@@ -88,6 +87,9 @@ class _RoomScreenState extends State<RoomScreen> {
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: theme.primaryColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
             onPressed: () => Navigator.pop(context, true),
             child: const Text("Leave", style: TextStyle(color: Colors.white)),

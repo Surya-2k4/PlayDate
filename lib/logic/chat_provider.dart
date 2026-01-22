@@ -84,10 +84,11 @@ class ChatProvider extends ChangeNotifier {
         .set(emoji);
   }
 
-  Future<void> sendLoveReaction(String sender) async {
+  Future<void> sendLoveReaction(String sender, String senderId) async {
     if (_chatRef == null) return;
     await _chatRef!.push().set({
       "sender": sender,
+      "senderId": senderId,
       "type": "reaction",
       "text": "❤️",
       "timestamp": DateTime.now().millisecondsSinceEpoch,
